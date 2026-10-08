@@ -2,81 +2,92 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fawad's Dashboard</title>
 <style>
   :root { --red:#e62429; --blue:#1e4fd8; --green:#22c55e; --dark:#0b1a3a; --white:#fff; --yellow:#ffd400; }
   * { box-sizing:border-box; }
-  html,body { margin:0; height:100%; }
+  html,body { margin:0; min-height:100%; }
   body {
     font-family:"Comic Sans MS","Trebuchet MS",system-ui,sans-serif;
     color:var(--white);
     background:
       radial-gradient(circle at 20% 20%, rgba(230,36,41,.35) 0, transparent 40%),
       radial-gradient(circle at 80% 70%, rgba(30,79,216,.45) 0, transparent 45%),
-      repeating-radial-gradient(circle at 0 0, transparent 0 28px, rgba(255,255,255,.07) 28px 30px),
       linear-gradient(160deg, var(--red) 0%, var(--dark) 45%, var(--blue) 100%);
     background-attachment:fixed;
-    overflow:hidden;
-    display:flex; flex-direction:column;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    display:flex; flex-direction:column; min-height:100vh;
   }
 
-  /* ---------- top bar ---------- */
-  header { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 14px; flex:0 0 auto; }
-  h1 { margin:0; font-size:clamp(1.3rem,3.2vw,2rem); text-shadow:3px 3px 0 var(--dark); animation:pop .6s ease-out; }
-  .topbtns { display:flex; gap:8px; align-items:center; }
+  /* ---------- header ---------- */
+  header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px 4px; }
+  h1 { margin:0; font-size:clamp(1.3rem,4vw,2rem); text-shadow:3px 3px 0 var(--dark); animation:pop .6s ease-out; }
+  .hbtns { display:flex; gap:6px; }
 
-  /* ---------- buttons with animation ---------- */
+  /* ---------- buttons ---------- */
   button, .btn {
-    cursor:pointer; border:none; border-radius:14px; padding:8px 14px;
+    cursor:pointer; border:none; border-radius:14px; padding:9px 14px; min-height:40px;
     font-size:.95rem; font-weight:bold; font-family:inherit; color:var(--dark); background:var(--green);
     transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;
     box-shadow:0 4px 0 rgba(0,0,0,.35); touch-action:manipulation;
   }
-  button:hover, .btn:hover { transform:translateY(-2px) scale(1.04); filter:brightness(1.1); box-shadow:0 6px 0 rgba(0,0,0,.35), 0 0 14px rgba(255,255,255,.5); }
-  button:active, .btn:active { transform:translateY(3px) scale(.96); box-shadow:0 1px 0 rgba(0,0,0,.35); }
+  button:hover { transform:translateY(-2px) scale(1.03); filter:brightness(1.1); box-shadow:0 6px 0 rgba(0,0,0,.35), 0 0 14px rgba(255,255,255,.45); }
+  button:active { transform:translateY(3px) scale(.96); box-shadow:0 1px 0 rgba(0,0,0,.35); }
   button.blue { background:var(--blue); color:var(--white); }
   button.yellow { background:var(--yellow); }
   button.red { background:var(--red); color:var(--white); }
+  button.kill { border:3px solid var(--white); animation:glow 1.8s ease-in-out infinite; }
+  button:disabled { opacity:.5; cursor:default; transform:none; }
+  @keyframes glow { 50% { box-shadow:0 0 18px rgba(230,36,41,1), 0 0 3px #fff; } }
 
-  /* kill switch: always visible, top-right, instant */
-  #kill {
-    position:fixed; top:8px; right:8px; z-index:200;
-    background:var(--red); color:var(--white); border:3px solid var(--white);
-    font-size:1rem; padding:8px 14px; box-shadow:0 0 16px rgba(230,36,41,.8);
-    animation:glow 1.6s ease-in-out infinite;
-  }
-  @keyframes glow { 50% { box-shadow:0 0 22px rgba(230,36,41,1), 0 0 4px #fff; } }
+  /* ---------- tabs ---------- */
+  nav.tabs { display:flex; gap:6px; padding:6px 12px; overflow-x:auto; }
+  nav.tabs button { flex:1 0 auto; background:rgba(255,255,255,.15); color:var(--white); box-shadow:none; }
+  nav.tabs button.active { background:var(--white); color:var(--dark); }
 
-  /* ---------- layout: fits one screen ---------- */
-  main {
-    flex:1 1 auto; min-height:0;
-    display:grid; gap:10px; padding:4px 12px 12px;
-    grid-template-columns:repeat(3,1fr);
-    grid-template-rows:auto auto 1fr;
-  }
-  .card {
-    border:3px solid var(--white); border-radius:18px; padding:10px 12px; background:rgba(11,26,58,.9);
-    box-shadow:4px 4px 0 var(--dark); min-height:0; overflow:hidden;
-    animation:rise .5s ease-out both;
-  }
-  .card:nth-child(2){animation-delay:.05s} .card:nth-child(3){animation-delay:.1s}
-  .card:nth-child(4){animation-delay:.15s} .card:nth-child(5){animation-delay:.2s} .card:nth-child(6){animation-delay:.25s}
-  .card h2 { margin:0 0 6px; font-size:1.05rem; }
-  .red h2{color:#ff9b9d} .blue h2{color:#9ec1ff} .green h2{color:#8ff0b3}
-  .big { font-size:1.05rem; font-weight:bold; margin:4px 0; line-height:1.3; }
-  .small { font-size:.8rem; color:#cfe0ff; margin:4px 0 0; }
-  .notice { background:rgba(255,255,255,.1); border-left:5px solid var(--green); border-radius:8px; padding:5px 8px; margin:4px 0; font-size:.85rem; }
-  .tiles { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-  .tile { display:flex; align-items:center; justify-content:center; text-align:center; padding:8px; border-radius:12px; font-weight:bold; font-size:.9rem; color:var(--white); text-decoration:none; }
+  /* ---------- panels ---------- */
+  main { flex:1; padding:6px 12px 24px; }
+  .panel { display:none; grid-template-columns:1fr; gap:12px; animation:fadeIn .35s ease-out; }
+  .panel.active { display:grid; }
+  @media (min-width:700px) { .panel { grid-template-columns:1fr 1fr; } }
+  @media (min-width:1000px) { .panel { grid-template-columns:repeat(3,1fr); } }
+  .panel.single { grid-template-columns:1fr; }
+
+  .card { border:3px solid var(--white); border-radius:18px; padding:14px; background:rgba(11,26,58,.92); box-shadow:4px 4px 0 var(--dark); min-width:0; animation:rise .45s ease-out both; }
+  .card h2 { margin:0 0 8px; font-size:1.1rem; }
+  .red h2{color:#ff9b9d} .blue h2{color:#9ec1ff} .green h2{color:#8ff0b3} .yellowh h2{color:#ffe680}
+  .big { font-size:1.15rem; font-weight:bold; margin:4px 0; line-height:1.35; }
+  .small { font-size:.85rem; color:#cfe0ff; margin:6px 0 0; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:8px; }
+
+  .tiles { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .tile { display:flex; align-items:center; justify-content:center; text-align:center; min-height:48px; padding:8px; border-radius:14px; font-weight:bold; color:var(--white); text-decoration:none; transition:transform .12s; }
+  .tile:hover { transform:translateY(-2px) scale(1.03); }
   .tile.red{background:var(--red)} .tile.blue{background:var(--blue)} .tile.green{background:var(--green);color:var(--dark)} .tile.yellow{background:var(--yellow);color:var(--dark)}
-  .gamebtns { display:grid; grid-template-columns:1fr; gap:6px; }
-  .gamebtns button { font-size:1rem; }
 
-  @keyframes rise { from { opacity:0; transform:translateY(12px) scale(.98); } to { opacity:1; transform:none; } }
-  @keyframes pop { from { transform:scale(.6); opacity:0; } to { transform:scale(1); opacity:1; } }
-  .fade { animation:fadeIn .4s ease-out; }
-  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+  .notice { background:rgba(255,255,255,.1); border-left:5px solid var(--green); border-radius:8px; padding:8px 10px; margin:6px 0; font-size:.95rem; }
+
+  details.more { margin-top:8px; background:rgba(255,255,255,.08); border-radius:12px; padding:8px 10px; }
+  details.more summary { cursor:pointer; font-weight:bold; list-style:none; }
+  details.more summary::-webkit-details-marker { display:none; }
+  details.more summary::before { content:"▶ "; }
+  details.more[open] summary::before { content:"▼ "; }
+  .termrow { display:flex; justify-content:space-between; gap:8px; padding:4px 0; border-bottom:1px dashed rgba(255,255,255,.2); font-size:.9rem; }
+
+  /* ---------- meme scroller ---------- */
+  .meme { background:var(--white); color:var(--dark); border-radius:14px; padding:14px; text-align:center; min-height:150px; display:flex; flex-direction:column; justify-content:center; gap:6px; animation:fadeIn .35s ease-out; }
+  .meme .emo { font-size:2.6rem; }
+  .meme .top { font-weight:bold; font-size:1rem; }
+  .meme .bottom { font-size:.9rem; }
+  .meme-nav { display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+  .dots { font-size:.85rem; color:#cfe0ff; }
+
+  /* ---------- joke ---------- */
+  .joke { font-size:1.1rem; font-weight:bold; min-height:70px; animation:fadeIn .35s ease-out; }
+
+  /* ---------- sound ---------- */
+  .soundbtns { display:flex; gap:8px; flex-wrap:wrap; }
 
   /* ---------- loader ---------- */
   #loader { position:fixed; inset:0; background:var(--dark); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:150; transition:opacity .4s; }
@@ -89,10 +100,10 @@
   /* ---------- modals ---------- */
   .modal { position:fixed; inset:0; background:rgba(5,12,30,.85); display:none; align-items:center; justify-content:center; z-index:100; padding:12px; }
   .modal.open { display:flex; animation:fadeIn .25s ease-out; }
-  .modalcard { border:4px solid var(--white); border-radius:20px; padding:14px; background:var(--dark); box-shadow:6px 6px 0 #000; width:min(420px,100%); max-height:95vh; overflow:auto; animation:pop .3s ease-out; }
-  .modalcard h2 { margin:0 0 8px; font-size:1.2rem; }
-  .modalhead { display:flex; justify-content:space-between; align-items:center; }
-  input { width:100%; padding:9px; border-radius:12px; border:3px solid var(--green); font-size:1rem; font-family:inherit; margin:4px 0; }
+  .modalcard { border:4px solid var(--white); border-radius:20px; padding:14px; background:var(--dark); box-shadow:6px 6px 0 #000; width:min(420px,100%); max-height:92vh; overflow:auto; animation:pop .3s ease-out; }
+  .modalhead { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
+  .modalcard h2 { margin:0; font-size:1.2rem; }
+  input { width:100%; padding:10px; border-radius:12px; border:3px solid var(--green); font-size:1rem; font-family:inherit; margin:6px 0; }
   canvas { display:block; margin:6px auto; border-radius:12px; background:#06122a; border:3px solid var(--white); touch-action:none; max-width:100%; }
   .controls { display:flex; gap:10px; justify-content:center; margin-top:6px; }
   .controls button { font-size:1.3rem; padding:6px 22px; }
@@ -102,7 +113,11 @@
   .cell.open{background:var(--white)} .cell.done{background:var(--green)}
   .shake { animation:shake .4s; }
   @keyframes shake { 20%,60% { transform:translateX(-6px); } 40%,80% { transform:translateX(6px); } }
-  .toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:var(--green); color:var(--dark); padding:8px 16px; border-radius:12px; font-weight:bold; z-index:300; display:none; animation:pop .3s ease-out; }
+  .toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:var(--green); color:var(--dark); padding:8px 16px; border-radius:12px; font-weight:bold; z-index:300; display:none; }
+
+  @keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+  @keyframes pop { from { transform:scale(.7); opacity:0; } to { transform:scale(1); opacity:1; } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 </style>
 </head>
 <body>
@@ -113,69 +128,113 @@
   <p>Loading...</p>
 </div>
 
-<button id="kill" title="Close this tab now (or press Esc)">⛔ KILL</button>
-
 <header>
   <h1 id="greet">Hey Fawad! 🕷️</h1>
-  <div class="topbtns">
+  <div class="hbtns">
     <button class="blue" id="openSettings">⚙️ Settings</button>
+    <button class="red kill" id="kill" title="Close this tab now (or press Esc)">⛔ KILL</button>
   </div>
 </header>
 
+<nav class="tabs">
+  <button class="active" data-tab="home">🏠 Home</button>
+  <button data-tab="fun">😂 Fun</button>
+  <button data-tab="school">📚 School</button>
+  <button data-tab="games">🎮 Games</button>
+</nav>
+
 <main>
-  <section class="card red">
-    <h2>🏠 Home Time</h2>
-    <div class="big" id="homeCount">Loading...</div>
-    <p class="small">3:10 pm normally. 2:00 pm on the last day of term.</p>
-  </section>
-
-  <section class="card blue">
-    <h2>📅 Days Till...</h2>
-    <div id="countdowns"></div>
-    <p class="small">William Hulme's Grammar School term dates.</p>
-  </section>
-
-  <section class="card green">
-    <h2>😂 Joke Time</h2>
-    <p class="big fade" id="jokeText">Press a button for a joke!</p>
-    <button id="jokeBtn">New Joke 🎲</button>
-    <button class="blue" id="todayJoke">Today's Joke</button>
-  </section>
-
-  <section class="card red">
-    <h2>🔊 Let Me Know</h2>
-    <button class="yellow" id="playSnd">▶ Play</button>
-    <audio id="snd" src="let-me-know.mp3" preload="auto"></audio>
-  </section>
-
-  <section class="card blue">
-    <h2>🔔 Notifications</h2>
-    <div id="notices"></div>
-  </section>
-
-  <section class="card green">
-    <h2>📚 School</h2>
-    <div class="tiles">
-      <a class="tile blue" href="https://www.office.com" target="_blank" rel="noopener">Office 365</a>
-      <a class="tile red" href="https://teams.microsoft.com" target="_blank" rel="noopener">Teams</a>
-      <a class="tile green" href="https://www.magmamath.com" target="_blank" rel="noopener">Magma Maths</a>
-      <a class="tile yellow" href="https://play.ttrockstars.com/" target="_blank" rel="noopener">TT Rockstars</a>
+  <!-- HOME -->
+  <section class="panel active" id="tab-home">
+    <div class="card red">
+      <h2>🏠 Home Time</h2>
+      <div class="big" id="homeCount">Loading...</div>
+      <p class="small">3:10 pm on normal days. 2:00 pm on the last day of term.</p>
+    </div>
+    <div class="card blue">
+      <h2>📅 Next Holiday</h2>
+      <div class="big" id="nextHoliday">Loading...</div>
+      <p class="small" id="nextHolidaySub"></p>
+    </div>
+    <div class="card green">
+      <h2>🔔 Notifications</h2>
+      <div id="notices"></div>
     </div>
   </section>
 
-  <section class="card red" style="grid-column: 1 / -1;">
-    <h2>🎮 Games</h2>
-    <div class="gamebtns" style="grid-template-columns:repeat(3,1fr)">
-      <button class="red" data-game="dodge">🚗 Car Dodge</button>
-      <button class="blue" data-game="memory">🧠 Car Memory</button>
-      <button class="yellow" data-game="whack">🏎️ Whack-a-Car</button>
+  <!-- FUN -->
+  <section class="panel" id="tab-fun">
+    <div class="card green">
+      <h2>😂 Joke Time</h2>
+      <p class="joke" id="jokeText">Tap the button for a joke!</p>
+      <div class="row">
+        <button id="jokeBtn">New Joke 🎲</button>
+        <button class="blue" id="todayJoke">Today's Joke</button>
+      </div>
+    </div>
+
+    <div class="card yellowh">
+      <h2>🖼️ Meme of the Day</h2>
+      <div class="meme" id="memeBox"></div>
+      <div class="meme-nav">
+        <button class="blue" id="memePrev">◀</button>
+        <span class="dots" id="memeDots"></span>
+        <button class="blue" id="memeNext">▶</button>
+      </div>
+      <p class="small">New memes every day. Tap ◀ ▶ to look at the others.</p>
+    </div>
+
+    <div class="card red">
+      <h2>🔊 Let Me Know</h2>
+      <div class="soundbtns">
+        <button class="yellow" id="soundPlay">▶ Play</button>
+        <button class="blue" id="soundPause">⏸ Pause</button>
+        <button class="red" id="soundStop">⏹ Stop</button>
+      </div>
+      <p class="small" id="soundStatus">Ready</p>
+      <audio id="snd" src="let-me-know.mp3" preload="auto"></audio>
+    </div>
+  </section>
+
+  <!-- SCHOOL -->
+  <section class="panel" id="tab-school">
+    <div class="card green">
+      <h2>📚 School Links</h2>
+      <div class="tiles">
+        <a class="tile blue" href="https://www.office.com" target="_blank" rel="noopener">Office 365</a>
+        <a class="tile red" href="https://teams.microsoft.com" target="_blank" rel="noopener">Teams</a>
+        <a class="tile green" href="https://www.magmamath.com" target="_blank" rel="noopener">Magma Maths</a>
+        <a class="tile yellow" href="https://play.ttrockstars.com/" target="_blank" rel="noopener">TT Rockstars</a>
+      </div>
+    </div>
+
+    <div class="card blue">
+      <h2>📅 Coming Up</h2>
+      <div id="countdowns"></div>
+      <details class="more">
+        <summary>See all term dates</summary>
+        <div id="allTerms"></div>
+      </details>
+      <p class="small">William Hulme's Grammar School term dates 2026–27.</p>
+    </div>
+  </section>
+
+  <!-- GAMES -->
+  <section class="panel single" id="tab-games">
+    <div class="card red">
+      <h2>🎮 Pick a Game</h2>
+      <div class="row">
+        <button class="red" data-game="dodge">🚗 Car Dodge</button>
+        <button class="blue" data-game="memory">🧠 Car Memory</button>
+        <button class="yellow" data-game="whack">🏎️ Whack-a-Car</button>
+      </div>
     </div>
   </section>
 </main>
 
 <!-- Game pop-up -->
 <div class="modal" id="gameModal">
-  <div class="modalcard">
+  <div class="modalcard" id="gameCard">
     <div class="modalhead"><h2 id="gameTitle">Game</h2><button class="red" id="closeGame">✖ Close</button></div>
 
     <div id="g-dodge" style="display:none">
@@ -206,8 +265,10 @@
     <div class="modalhead"><h2>⚙️ Settings</h2><button class="red" id="closeSettings">✖ Close</button></div>
     <p class="small">What should the dashboard call you?</p>
     <input id="nameInput" maxlength="20" placeholder="Your name">
-    <button id="saveName">Save name ✔</button>
-    <button class="blue" id="resetName">Reset to Fawad</button>
+    <div class="row">
+      <button id="saveName">Save name ✔</button>
+      <button class="blue" id="resetName">Reset to Fawad</button>
+    </div>
   </div>
 </div>
 
@@ -218,26 +279,29 @@ function $(id){ return document.getElementById(id); }
 function ymd(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function parse(s){ return new Date(s + "T00:00:00"); }
 function toast(msg){ const t=$("toast"); t.textContent=msg; t.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display="none",1500); }
+function dayIndex(){ return Math.floor(Date.now()/86400000); }
 
-/* ---------- saved settings (name) ---------- */
+/* ---------- tabs ---------- */
+document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("nav.tabs button").forEach(x => x.classList.toggle("active", x===b));
+  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "tab-"+b.dataset.tab));
+}));
+
+/* ---------- name (saved on the device) ---------- */
 const DEFAULT_NAME = "Fawad";
 let memoryName = null;
 function getName(){
   try { const v = localStorage.getItem("fawadName"); if (v) return v; } catch(e){}
   return memoryName || DEFAULT_NAME;
 }
-function setName(n){
-  memoryName = n;
-  try { localStorage.setItem("fawadName", n); } catch(e){}
-  applyName();
-}
+function setName(n){ memoryName = n; try { localStorage.setItem("fawadName", n); } catch(e){} applyName(); }
 function applyName(){ $("greet").textContent = "Hey " + getName() + "! 🕷️"; }
 applyName();
 
 /* ---------- loader ---------- */
 window.addEventListener("load", () => setTimeout(() => $("loader").classList.add("hide"), 900));
 
-/* ---------- kill switch (instant) ---------- */
+/* ---------- kill switch ---------- */
 function kill(){ window.close(); window.location.replace("about:blank"); }
 $("kill").addEventListener("click", kill);
 document.addEventListener("keydown", e => { if (e.key === "Escape") kill(); });
@@ -252,7 +316,7 @@ $("saveName").addEventListener("click", () => {
 });
 $("resetName").addEventListener("click", () => { $("nameInput").value = DEFAULT_NAME; });
 
-/* ---------- school calendar (William Hulme's Grammar School 2026-27) ---------- */
+/* ---------- school calendar: William Hulme's Grammar School 2026-27 ---------- */
 const TERMS = [
   { start:"2026-09-03", end:"2026-12-18" },
   { start:"2027-01-05", end:"2027-03-25" },
@@ -267,12 +331,12 @@ const CLOSED_RANGES = [
   ["2027-05-31","2027-06-04","Half term"]
 ];
 const KEY_DATES = [
-  { name:"Autumn half term", date:"2026-10-26" },
-  { name:"Christmas holidays", date:"2026-12-18" },
-  { name:"Spring half term", date:"2027-02-15" },
-  { name:"Easter holidays", date:"2027-03-25" },
-  { name:"Summer half term", date:"2027-05-31" },
-  { name:"Summer holidays", date:"2027-07-16" }
+  { name:"Autumn half term", date:"2026-10-26", end:"2026-10-30", back:"2026-11-02" },
+  { name:"Christmas holidays", date:"2026-12-18", end:"2027-01-04", back:"2027-01-05" },
+  { name:"Spring half term", date:"2027-02-15", end:"2027-02-19", back:"2027-02-22" },
+  { name:"Easter holidays", date:"2027-03-25", end:"2027-04-12", back:"2027-04-13" },
+  { name:"Summer half term", date:"2027-05-31", end:"2027-06-04", back:"2027-06-07" },
+  { name:"Summer holidays", date:"2027-07-16", end:"2027-09-01", back:"2027-09-02" }
 ];
 function closedReason(s){ for (const [a,b,l] of CLOSED_RANGES) if (s>=a && s<=b) return l; return null; }
 function isSchoolDay(d){
@@ -286,6 +350,7 @@ function nextSchoolDay(from){
   for (let i=1;i<400;i++){ d.setDate(d.getDate()+1); if (isSchoolDay(d)) return new Date(d); }
   return null;
 }
+function daysTill(s){ const d=parse(s), n=new Date(); n.setHours(0,0,0,0); return Math.ceil((d-n)/86400000); }
 
 /* ---------- home time ---------- */
 function updateHomeCount(){
@@ -306,76 +371,120 @@ function updateHomeCount(){
 }
 updateHomeCount(); setInterval(updateHomeCount, 15000);
 
-/* ---------- days till ---------- */
-function daysTill(s){ const d=parse(s), n=new Date(); n.setHours(0,0,0,0); return Math.ceil((d-n)/86400000); }
+/* ---------- next holiday + coming up + all terms ---------- */
 (function(){
-  const box=$("countdowns"); box.innerHTML="";
-  KEY_DATES.forEach(k => {
-    const d = daysTill(k.date); if (d < 0) return;
-    const p=document.createElement("div"); p.className="big";
-    p.textContent = d===0 ? k.name + ": TODAY! 🎉"
-      : d>=14 ? k.name + ": " + Math.floor(d/7) + "w " + (d%7) + "d"
-      : k.name + ": " + d + " day" + (d!==1?"s":"");
-    box.appendChild(p);
-  });
+  const upcoming = KEY_DATES.filter(k => daysTill(k.end) >= 0);
+  const next = upcoming[0];
+  if (next) {
+    const d = daysTill(next.date);
+    $("nextHoliday").textContent = d <= 0 ? next.name + " is on now! 🎉" : next.name + " in " + (d>=14 ? Math.floor(d/7)+" weeks" : d+" day"+(d!==1?"s":"")) + "!";
+    $("nextHolidaySub").textContent = "Starts " + parse(next.date).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"}) + ".";
+  } else {
+    $("nextHoliday").textContent = "No more holidays this year.";
+  }
+  $("countdowns").innerHTML = upcoming.slice(0,3).map(k => {
+    const d = daysTill(k.date);
+    return '<div class="termrow"><span>'+k.name+'</span><span>'+(d<=0?"now":d+" days")+'</span></div>';
+  }).join("");
+  $("allTerms").innerHTML = KEY_DATES.map(k => {
+    return '<div class="termrow"><span>'+k.name+'</span><span>'+parse(k.date).toLocaleDateString("en-GB",{day:"numeric",month:"short"})+'</span></div>';
+  }).join("") + '<p class="small">Last day of term finishes at 2:00 pm. Staff INSET and planning days are also closed.</p>';
 })();
-
-/* ---------- jokes ---------- */
-const JOKES = [
-  "Why did the car get a ticket? It was parked in the wrong lane.",
-  "What do you call a car that tells bad jokes? A joke-mobile! 🚗",
-  "Why don't cars ever get lost? They always follow the road signs.",
-  "What's a race car's favourite snack? Brake-fast bars.",
-  "Why was the maths book sad? It had too many problems.",
-  "What do you call a sleeping dinosaur? A dino-snore!",
-  "Why did the spider go to school? To improve its web-skills.",
-  "What's a cat's favourite colour? Purr-ple.",
-  "Why did the teddy bear say no to dessert? It was already stuffed!"
-];
-const XMAS_JOKES = [
-  "What do you call a snowman with a six-pack? An abdominal snowman!",
-  "What do reindeer say before a joke? Hoof you ready for this?"
-];
-function setJoke(t){ const el=$("jokeText"); el.classList.remove("fade"); void el.offsetWidth; el.textContent=t; el.classList.add("fade"); }
-$("jokeBtn").addEventListener("click", () => {
-  const m = new Date().getMonth();
-  const pool = (m===10||m===11) ? JOKES.concat(XMAS_JOKES) : JOKES;
-  setJoke(pool[Math.floor(Math.random()*pool.length)]);
-});
-$("todayJoke").addEventListener("click", () => setJoke(JOKES[Math.floor(Date.now()/86400000) % JOKES.length]));
-
-/* ---------- sound ---------- */
-$("playSnd").addEventListener("click", () => {
-  const a=$("snd"); a.currentTime=0;
-  a.play().catch(() => toast("Sound blocked. Check volume."));
-});
 
 /* ---------- notifications ---------- */
 (function(){
   const now=new Date(), list=[];
   const xmas=daysTill("2026-12-25");
   if (xmas>0) list.push("🎄 " + xmas + " days till Christmas!");
-  const next = KEY_DATES.find(k => daysTill(k.date) >= 0);
-  if (next) list.push("📅 " + next.name + " in " + daysTill(next.date) + " days.");
-  const r = closedReason(ymd(now));
+  const r=closedReason(ymd(now));
   if (r) list.push("🎉 School closed today: " + r + ".");
-  list.push("😂 Tap Joke Time for a fresh one!");
+  list.push("😂 Tap Fun for jokes and memes!");
+  list.push("🕒 Home time is 3:10 pm on normal days.");
   $("notices").innerHTML = list.map(t => '<div class="notice">'+t+'</div>').join("");
 })();
 
+/* ---------- jokes ---------- */
+const JOKES = [
+  "Why did the car get a ticket? It was parked in the wrong lane. Honest mistake, officer!",
+  "What do you call a car that tells bad jokes? A joke-mobile! 🚗💨",
+  "I told my maths teacher I was bad at subtraction. She said, 'Don't worry, you'll take it away from me.' 😂",
+  "Why did the spider get an A? It really nailed its web-design project. 🕷️",
+  "What do you call a sleeping dinosaur? A dino-SNORE! 🦖",
+  "Why was the maths book so sad? It had way too many problems.",
+  "What do you call a cat that loves cars? A Purr-ari! 🏎️🐱",
+  "Why did the teddy bear say no to dessert? Because it was already stuffed! 🧸",
+  "What's a race car's favourite snack? Brake-fast bars! 🍫",
+  "Why did the banana go to the doctor? It wasn't peeling well. 🍌",
+  "What do you call a fish with no eyes? A fsh. 🐟",
+  "Why did the scarecrow win an award? He was outstanding in his field! 🌾",
+  "What did the pencil say to the paper? 'I've got your back!' ✏️",
+  "Why can't you give Elsa a balloon? Because she'll let it go. 🎈",
+  "What do you call a car that sings? A Honda-tune! 🎶",
+  "How does a computer get cold? It catches a virus. 💻🤧",
+  "Why did the football team bring a ladder? To get to the high scores! ⚽",
+  "What's a skeleton's least favourite room? The living room. 💀",
+  "Why do cars make great comedians? They know how to crack up. 🚗",
+  "I'm reading a book about anti-gravity. It's impossible to put down! 📖"
+];
+const XMAS_JOKES = [
+  "What do you call a snowman with a six-pack? An abdominal snowman! ⛄",
+  "What do reindeer say before a joke? Hoof you ready for this? 🦌",
+  "Why was Santa's little helper so good at maths? He had elf-confidence! 🎅"
+];
+function setJoke(t){ const el=$("jokeText"); el.style.animation="none"; void el.offsetWidth; el.style.animation=""; el.textContent=t; }
+$("jokeBtn").addEventListener("click", () => {
+  const m = new Date().getMonth();
+  const pool = (m===10||m===11) ? JOKES.concat(XMAS_JOKES) : JOKES;
+  setJoke(pool[Math.floor(Math.random()*pool.length)]);
+});
+$("todayJoke").addEventListener("click", () => setJoke(JOKES[dayIndex() % JOKES.length]));
+
+/* ---------- meme scroller (10 original text memes, rotates daily) ---------- */
+const MEMES = [
+  { emo:"🚗💨", top:"Me: I'll go to bed early.", bottom:"Also me at 11pm: 'just one more race'" },
+  { emo:"📚🧠", top:"Homework: 5 minutes.", bottom:"Also homework: 'Surprise, it's 45 minutes'" },
+  { emo:"🍕😋", top:"Mum: What do you want for tea?", bottom:"Me: Anything. As long as it's pizza." },
+  { emo:"🐶🐾", top:"Dog after hearing the word 'walk':", bottom:"'I was born ready!'" },
+  { emo:"🏎️🏁", top:"Me in every game:", bottom:"'I'm the fastest car on the track!'" },
+  { emo:"😴🛌", top:"Monday morning:", bottom:"'Five more minutes' x 12" },
+  { emo:"🧦👟", top:"Where did my other sock go?", bottom:"It's living its best life somewhere." },
+  { emo:"🎮🕹️", top:"Gaming: 'One more level.'", bottom:"Sunrise: 'Oh no, you're still up?'" },
+  { emo:"🦖🦕", top:"Me pretending I'm not hungry", bottom:"Also me eating the whole snack bag." },
+  { emo:"🎄🎁", top:"Christmas countdown:", bottom:"'I'm being good, I promise!'" }
+];
+let memeIndex = dayIndex() % MEMES.length;
+function renderMeme(){
+  const m = MEMES[memeIndex];
+  $("memeBox").innerHTML = '<div class="emo">'+m.emo+'</div><div class="top"></div><div class="bottom"></div>';
+  $("memeBox").querySelector(".top").textContent = m.top;
+  $("memeBox").querySelector(".bottom").textContent = m.bottom;
+  $("memeDots").textContent = (memeIndex+1) + " / " + MEMES.length;
+}
+$("memePrev").addEventListener("click", () => { memeIndex = (memeIndex - 1 + MEMES.length) % MEMES.length; renderMeme(); });
+$("memeNext").addEventListener("click", () => { memeIndex = (memeIndex + 1) % MEMES.length; renderMeme(); });
+renderMeme();
+
+/* ---------- Let Me Know: play / pause / stop ---------- */
+const snd = $("snd");
+function soundStatus(t){ $("soundStatus").textContent = t; }
+$("soundPlay").addEventListener("click", () => {
+  snd.play().then(() => soundStatus("Playing 🔊")).catch(() => soundStatus("Couldn't play. Check the volume."));
+});
+$("soundPause").addEventListener("click", () => { snd.pause(); soundStatus("Paused ⏸"); });
+$("soundStop").addEventListener("click", () => { snd.pause(); snd.currentTime = 0; soundStatus("Stopped ⏹"); });
+snd.addEventListener("ended", () => soundStatus("Finished ✅"));
+
 /* ---------- game pop-up ---------- */
-let activeGame = null, stopGame = () => {};
+let stopGame = () => {};
 const GAME_TITLES = { dodge:"🚗 Car Dodge", memory:"🧠 Car Memory", whack:"🏎️ Whack-a-Car" };
 function openGame(name){
   stopGame();
   ["dodge","memory","whack"].forEach(g => $("g-"+g).style.display = (g===name?"block":"none"));
   $("gameTitle").textContent = GAME_TITLES[name];
   $("gameModal").classList.add("open");
-  activeGame = name;
-  const starter = { dodge:initDodge, memory:initMemory, whack:initWhack }[name];
-  stopGame = starter();
+  stopGame = { dodge:initDodge, memory:initMemory, whack:initWhack }[name]();
 }
-function closeGame(){ stopGame(); stopGame=()=>{}; $("gameModal").classList.remove("open"); activeGame=null; }
+function closeGame(){ stopGame(); stopGame=()=>{}; $("gameModal").classList.remove("open"); }
 document.querySelectorAll("[data-game]").forEach(b => b.addEventListener("click", () => openGame(b.dataset.game)));
 $("closeGame").addEventListener("click", closeGame);
 
@@ -395,8 +504,7 @@ function initDodge(){
     cars=cars.filter(car=>car.y<H+CH);
     for(const car of cars){
       if(car.x<px+CW && car.x+CW>px && car.y<H-70+CH && car.y+CH>H-70){
-        running=false; $("gameModal").querySelector(".modalcard").classList.add("shake");
-        setTimeout(()=>$("gameModal").querySelector(".modalcard").classList.remove("shake"),400);
+        running=false; $("gameCard").classList.add("shake"); setTimeout(()=>$("gameCard").classList.remove("shake"),400);
         ctx.fillStyle="rgba(0,0,0,.6)"; ctx.fillRect(0,0,W,H); ctx.fillStyle="#fff"; ctx.font="bold 20px sans-serif"; ctx.textAlign="center"; ctx.fillText("Crash! Press Start",W/2,H/2); return;
       }
     }
@@ -406,7 +514,7 @@ function initDodge(){
   const kd=e=>{ if(e.key==="ArrowLeft")keys.left=true; if(e.key==="ArrowRight")keys.right=true; };
   const ku=e=>{ if(e.key==="ArrowLeft")keys.left=false; if(e.key==="ArrowRight")keys.right=false; };
   document.addEventListener("keydown",kd); document.addEventListener("keyup",ku);
-  const hold=(id,k)=>{ const b=$(id); const d=()=>keys[k]=true, u=()=>keys[k]=false; b.onpointerdown=d; b.onpointerup=u; b.onpointerleave=u; b.onpointercancel=u; };
+  const hold=(id,k)=>{ const b=$(id); b.onpointerdown=()=>keys[k]=true; b.onpointerup=()=>keys[k]=false; b.onpointerleave=()=>keys[k]=false; b.onpointercancel=()=>keys[k]=false; };
   hold("dl","left"); hold("dr","right");
   $("dodgeStart").onclick=reset;
   ctx.fillStyle="#fff"; ctx.font="bold 18px sans-serif"; ctx.textAlign="center"; ctx.fillText("Press Start!",W/2,H/2);
