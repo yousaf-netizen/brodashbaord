@@ -22,11 +22,11 @@
 
   /* ---------- header ---------- */
   header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px 4px; }
-  h1 { margin:0; font-size:clamp(1.3rem,4vw,2rem); text-shadow:3px 3px 0 var(--dark); animation:pop .6s ease-out; }
-  .hbtns { display:flex; gap:6px; }
+  h1 { margin:0; font-size:clamp(1.2rem,4.5vw,2rem); text-shadow:3px 3px 0 var(--dark); animation:pop .6s ease-out; }
+  .hbtns { display:flex; gap:6px; flex-wrap:wrap; }
 
   /* ---------- buttons ---------- */
-  button, .btn {
+  button {
     cursor:pointer; border:none; border-radius:14px; padding:9px 14px; min-height:40px;
     font-size:.95rem; font-weight:bold; font-family:inherit; color:var(--dark); background:var(--green);
     transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;
@@ -42,7 +42,7 @@
   @keyframes glow { 50% { box-shadow:0 0 18px rgba(230,36,41,1), 0 0 3px #fff; } }
 
   /* ---------- tabs ---------- */
-  nav.tabs { display:flex; gap:6px; padding:6px 12px; overflow-x:auto; }
+  nav.tabs { display:flex; gap:6px; padding:6px 12px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
   nav.tabs button { flex:1 0 auto; background:rgba(255,255,255,.15); color:var(--white); box-shadow:none; }
   nav.tabs button.active { background:var(--white); color:var(--dark); }
 
@@ -67,6 +67,13 @@
   .tile.red{background:var(--red)} .tile.blue{background:var(--blue)} .tile.green{background:var(--green);color:var(--dark)} .tile.yellow{background:var(--yellow);color:var(--dark)}
 
   .notice { background:rgba(255,255,255,.1); border-left:5px solid var(--green); border-radius:8px; padding:8px 10px; margin:6px 0; font-size:.95rem; }
+  .fact { background:rgba(255,255,255,.1); border-radius:12px; padding:10px; font-size:1rem; line-height:1.4; animation:fadeIn .4s ease-out; }
+
+  .points { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .pointsnum { font-size:1.8rem; font-weight:bold; color:var(--yellow); }
+  .badges { display:flex; gap:6px; flex-wrap:wrap; }
+  .badge { background:rgba(255,255,255,.15); border-radius:12px; padding:4px 8px; font-size:.85rem; }
+  .badge.locked { opacity:.35; }
 
   details.more { margin-top:8px; background:rgba(255,255,255,.08); border-radius:12px; padding:8px 10px; }
   details.more summary { cursor:pointer; font-weight:bold; list-style:none; }
@@ -75,7 +82,7 @@
   details.more[open] summary::before { content:"▼ "; }
   .termrow { display:flex; justify-content:space-between; gap:8px; padding:4px 0; border-bottom:1px dashed rgba(255,255,255,.2); font-size:.9rem; }
 
-  /* ---------- meme scroller ---------- */
+  /* ---------- meme ---------- */
   .meme { background:var(--white); color:var(--dark); border-radius:14px; padding:14px; text-align:center; min-height:150px; display:flex; flex-direction:column; justify-content:center; gap:6px; animation:fadeIn .35s ease-out; }
   .meme .emo { font-size:2.6rem; }
   .meme .top { font-weight:bold; font-size:1rem; }
@@ -83,11 +90,20 @@
   .meme-nav { display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
   .dots { font-size:.85rem; color:#cfe0ff; }
 
-  /* ---------- joke ---------- */
   .joke { font-size:1.1rem; font-weight:bold; min-height:70px; animation:fadeIn .35s ease-out; }
-
-  /* ---------- sound ---------- */
   .soundbtns { display:flex; gap:8px; flex-wrap:wrap; }
+
+  /* ---------- quiz ---------- */
+  .qopts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+  .qopts button { background:var(--blue); color:var(--white); font-size:.95rem; }
+  .qopts button.right { background:var(--green); color:var(--dark); }
+  .qopts button.wrong { background:var(--red); color:var(--white); }
+
+  /* ---------- doodle ---------- */
+  .palette { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
+  .swatch { width:34px; height:34px; min-height:34px; padding:0; border-radius:50%; border:3px solid var(--white); box-shadow:none; }
+  .swatch.on { outline:3px solid var(--yellow); }
+  #doodle { display:block; width:100%; max-width:100%; height:auto; aspect-ratio:1/1; background:var(--white); border-radius:12px; border:3px solid var(--white); touch-action:none; }
 
   /* ---------- loader ---------- */
   #loader { position:fixed; inset:0; background:var(--dark); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:150; transition:opacity .4s; }
@@ -100,11 +116,11 @@
   /* ---------- modals ---------- */
   .modal { position:fixed; inset:0; background:rgba(5,12,30,.85); display:none; align-items:center; justify-content:center; z-index:100; padding:12px; }
   .modal.open { display:flex; animation:fadeIn .25s ease-out; }
-  .modalcard { border:4px solid var(--white); border-radius:20px; padding:14px; background:var(--dark); box-shadow:6px 6px 0 #000; width:min(420px,100%); max-height:92vh; overflow:auto; animation:pop .3s ease-out; }
+  .modalcard { border:4px solid var(--white); border-radius:20px; padding:14px; background:var(--dark); box-shadow:6px 6px 0 #000; width:min(440px,100%); max-height:92vh; overflow:auto; animation:pop .3s ease-out; }
   .modalhead { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
   .modalcard h2 { margin:0; font-size:1.2rem; }
   input { width:100%; padding:10px; border-radius:12px; border:3px solid var(--green); font-size:1rem; font-family:inherit; margin:6px 0; }
-  canvas { display:block; margin:6px auto; border-radius:12px; background:#06122a; border:3px solid var(--white); touch-action:none; max-width:100%; }
+  canvas.game { display:block; margin:6px auto; border-radius:12px; background:#06122a; border:3px solid var(--white); touch-action:none; max-width:100%; }
   .controls { display:flex; gap:10px; justify-content:center; margin-top:6px; }
   .controls button { font-size:1.3rem; padding:6px 22px; }
   .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; max-width:300px; margin:6px auto; }
@@ -113,11 +129,21 @@
   .cell.open{background:var(--white)} .cell.done{background:var(--green)}
   .shake { animation:shake .4s; }
   @keyframes shake { 20%,60% { transform:translateX(-6px); } 40%,80% { transform:translateX(6px); } }
-  .toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:var(--green); color:var(--dark); padding:8px 16px; border-radius:12px; font-weight:bold; z-index:300; display:none; }
+  .toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:var(--green); color:var(--dark); padding:8px 16px; border-radius:12px; font-weight:bold; z-index:300; display:none; max-width:90vw; text-align:center; }
 
   @keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
   @keyframes pop { from { transform:scale(.7); opacity:0; } to { transform:scale(1); opacity:1; } }
   @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+  /* ---------- small phones ---------- */
+  @media (max-width:420px) {
+    h1 { font-size:1.15rem; }
+    button { padding:8px 11px; font-size:.9rem; }
+    .tiles { grid-template-columns:1fr; }
+    .qopts { grid-template-columns:1fr; }
+    .grid { max-width:100%; }
+    .modalcard { padding:12px; }
+  }
 </style>
 </head>
 <body>
@@ -156,6 +182,15 @@
       <div class="big" id="nextHoliday">Loading...</div>
       <p class="small" id="nextHolidaySub"></p>
     </div>
+    <div class="card yellowh">
+      <h2>🏆 Your Points</h2>
+      <div class="points">
+        <div class="pointsnum" id="pointsNum">0</div>
+        <div class="small">points</div>
+      </div>
+      <div class="badges" id="badges" style="margin-top:8px"></div>
+      <p class="small">Earn points by playing games and the brain quiz.</p>
+    </div>
     <div class="card green">
       <h2>🔔 Notifications</h2>
       <div id="notices"></div>
@@ -164,6 +199,11 @@
 
   <!-- FUN -->
   <section class="panel" id="tab-fun">
+    <div class="card green">
+      <h2>💡 Fact of the Day</h2>
+      <p class="fact" id="factText">Loading...</p>
+    </div>
+
     <div class="card green">
       <h2>😂 Joke Time</h2>
       <p class="joke" id="jokeText">Tap the button for a joke!</p>
@@ -193,6 +233,12 @@
       </div>
       <p class="small" id="soundStatus">Ready</p>
       <audio id="snd" src="let-me-know.mp3" preload="auto"></audio>
+    </div>
+
+    <div class="card blue">
+      <h2>🎨 Doodle Pad</h2>
+      <p class="small">Draw anything you like!</p>
+      <button class="blue" id="openDoodle">Open Doodle Pad ✏️</button>
     </div>
   </section>
 
@@ -227,6 +273,7 @@
         <button class="red" data-game="dodge">🚗 Car Dodge</button>
         <button class="blue" data-game="memory">🧠 Car Memory</button>
         <button class="yellow" data-game="whack">🏎️ Whack-a-Car</button>
+        <button class="green" data-game="quiz">❓ Brain Quiz</button>
       </div>
     </div>
   </section>
@@ -239,7 +286,7 @@
 
     <div id="g-dodge" style="display:none">
       <div class="big" id="dodgeScore">Score: 0</div>
-      <canvas id="dodge" width="260" height="340"></canvas>
+      <canvas id="dodge" class="game" width="260" height="340"></canvas>
       <div class="controls"><button id="dl">◀</button><button id="dr">▶</button></div>
       <p class="small">Arrow keys or the buttons.</p>
       <button id="dodgeStart">Start / Restart</button>
@@ -255,6 +302,27 @@
       <div class="big" id="whackScore">Score: 0 · Time: 20</div>
       <div class="grid" id="whackGrid"></div>
       <button id="whackStart">Start 20-second round</button>
+    </div>
+
+    <div id="g-quiz" style="display:none">
+      <div class="big" id="quizProgress">Question 1 of 8</div>
+      <p class="big" id="quizQ"></p>
+      <div class="qopts" id="quizOpts"></div>
+      <p class="small" id="quizMsg"></p>
+      <button id="quizNext" style="display:none">Next ➜</button>
+      <button id="quizAgain" style="display:none" class="blue">Play Again</button>
+    </div>
+  </div>
+</div>
+
+<!-- Doodle pop-up -->
+<div class="modal" id="doodleModal">
+  <div class="modalcard">
+    <div class="modalhead"><h2>🎨 Doodle Pad</h2><button class="red" id="closeDoodle">✖ Close</button></div>
+    <div class="palette" id="palette"></div>
+    <canvas id="doodle" width="300" height="300"></canvas>
+    <div class="row">
+      <button class="blue" id="clearDoodle">🧽 Clear</button>
     </div>
   </div>
 </div>
@@ -274,15 +342,38 @@
 
 <div class="toast" id="toast">Saved!</div>
 
-<!-- Kill switch sound (upload kill.mp4 to the same folder) -->
 <audio id="killSnd" src="kill.mp4" preload="auto"></audio>
 
 <script>
 function $(id){ return document.getElementById(id); }
 function ymd(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function parse(s){ return new Date(s + "T00:00:00"); }
-function toast(msg){ const t=$("toast"); t.textContent=msg; t.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display="none",1500); }
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display="none",1800); }
 function dayIndex(){ return Math.floor(Date.now()/86400000); }
+function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(p=>p[1]); }
+
+/* ---------- saved data (on this device) ---------- */
+function loadNum(key){ try { return Number(localStorage.getItem(key)||0); } catch(e){ return memPoints; } }
+function saveNum(key,v){ try { localStorage.setItem(key, String(v)); } catch(e){} }
+let memPoints = 0;
+function getPoints(){ return loadNum("fawadPoints"); }
+function addPoints(n){
+  const total = getPoints() + n;
+  memPoints = total; saveNum("fawadPoints", total);
+  renderPoints();
+  if (n > 0) toast("+" + n + " points! ⭐");
+}
+const BADGES = [
+  { at:10, label:"🏁 Rookie Racer" },
+  { at:25, label:"⚡ Super Speedster" },
+  { at:50, label:"🏆 Legend" }
+];
+function renderPoints(){
+  const p = getPoints();
+  $("pointsNum").textContent = p;
+  $("badges").innerHTML = BADGES.map(b => '<span class="badge '+(p>=b.at?'':'locked')+'">'+b.label+' ('+b.at+')</span>').join("");
+}
+renderPoints();
 
 /* ---------- tabs ---------- */
 document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => {
@@ -290,7 +381,7 @@ document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("cl
   document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "tab-"+b.dataset.tab));
 }));
 
-/* ---------- name (saved on the device) ---------- */
+/* ---------- name ---------- */
 const DEFAULT_NAME = "Fawad";
 let memoryName = null;
 function getName(){
@@ -317,7 +408,7 @@ function kill(){
   s.addEventListener("ended", go, { once:true });
   const p = s.play();
   if (p && p.catch) p.catch(go);
-  setTimeout(go, 2500); // safety limit so the tab always closes
+  setTimeout(go, 2500);
 }
 $("kill").addEventListener("click", kill);
 document.addEventListener("keydown", e => { if (e.key === "Escape") kill(); });
@@ -414,10 +505,30 @@ updateHomeCount(); setInterval(updateHomeCount, 15000);
   if (xmas>0) list.push("🎄 " + xmas + " days till Christmas!");
   const r=closedReason(ymd(now));
   if (r) list.push("🎉 School closed today: " + r + ".");
-  list.push("😂 Tap Fun for jokes and memes!");
+  list.push("😂 Tap Fun for jokes, memes and facts!");
   list.push("🕒 Home time is 3:10 pm on normal days.");
   $("notices").innerHTML = list.map(t => '<div class="notice">'+t+'</div>').join("");
 })();
+
+/* ---------- fact of the day (accurate, kid-friendly) ---------- */
+const FACTS = [
+  "A cheetah can go from 0 to 60 mph (about 97 km/h) in around 3 seconds. 🐆",
+  "Octopuses have three hearts and blue blood. 🐙",
+  "Honey never goes off. Archaeologists have found edible honey in ancient Egyptian tombs. 🍯",
+  "A bolt of lightning is hotter than the surface of the Sun. ⚡",
+  "Bananas are berries, but strawberries aren't. 🍌",
+  "Sharks have been around longer than trees. 🦈",
+  "A group of flamingos is called a flamboyance. 🦩",
+  "Your nose can remember around 50,000 different smells. 👃",
+  "Wombat poop is cube-shaped. 🟫",
+  "The Eiffel Tower can grow about 15 cm taller in summer because the metal expands in the heat. 🗼",
+  "A day on Venus is longer than a year on Venus. 🪐",
+  "Butterflies taste with their feet. 🦋",
+  "Giraffes only need about 30 minutes of sleep a day, and it's often in short naps. 🦒",
+  "Hot water can freeze faster than cold water in some conditions. This is called the Mpemba effect. 🧊",
+  "The Pacific Ocean is the biggest ocean on Earth. 🌊"
+];
+$("factText").textContent = FACTS[dayIndex() % FACTS.length];
 
 /* ---------- jokes ---------- */
 const JOKES = [
@@ -455,7 +566,7 @@ $("jokeBtn").addEventListener("click", () => {
 });
 $("todayJoke").addEventListener("click", () => setJoke(JOKES[dayIndex() % JOKES.length]));
 
-/* ---------- meme scroller (10 original text memes, rotates daily) ---------- */
+/* ---------- meme scroller ---------- */
 const MEMES = [
   { emo:"🚗💨", top:"Me: I'll go to bed early.", bottom:"Also me at 11pm: 'just one more race'" },
   { emo:"📚🧠", top:"Homework: 5 minutes.", bottom:"Also homework: 'Surprise, it's 45 minutes'" },
@@ -480,7 +591,7 @@ $("memePrev").addEventListener("click", () => { memeIndex = (memeIndex - 1 + MEM
 $("memeNext").addEventListener("click", () => { memeIndex = (memeIndex + 1) % MEMES.length; renderMeme(); });
 renderMeme();
 
-/* ---------- Let Me Know: play / pause / stop ---------- */
+/* ---------- Let Me Know ---------- */
 const snd = $("snd");
 function soundStatus(t){ $("soundStatus").textContent = t; }
 $("soundPlay").addEventListener("click", () => {
@@ -490,15 +601,53 @@ $("soundPause").addEventListener("click", () => { snd.pause(); soundStatus("Paus
 $("soundStop").addEventListener("click", () => { snd.pause(); snd.currentTime = 0; soundStatus("Stopped ⏹"); });
 snd.addEventListener("ended", () => soundStatus("Finished ✅"));
 
+/* ---------- Doodle Pad ---------- */
+const DOODLE_COLOURS = ["#000000","#e62429","#1e4fd8","#22c55e","#ffd400","#ff7ac8"];
+let doodleColour = DOODLE_COLOURS[0];
+const dc = $("doodle"), dctx = dc.getContext("2d");
+dctx.lineCap = "round"; dctx.lineJoin = "round"; dctx.lineWidth = 6;
+(function buildPalette(){
+  const pal = $("palette");
+  DOODLE_COLOURS.forEach((c,i) => {
+    const b = document.createElement("button");
+    b.className = "swatch" + (i===0?" on":"");
+    b.style.background = c;
+    b.setAttribute("aria-label", "Colour " + (i+1));
+    b.onclick = () => {
+      doodleColour = c;
+      pal.querySelectorAll(".swatch").forEach(x => x.classList.toggle("on", x===b));
+    };
+    pal.appendChild(b);
+  });
+})();
+let drawing = false, lastX = 0, lastY = 0;
+function doodlePos(e){
+  const r = dc.getBoundingClientRect();
+  return { x: (e.clientX - r.left) * (dc.width / r.width), y: (e.clientY - r.top) * (dc.height / r.height) };
+}
+dc.addEventListener("pointerdown", e => { drawing = true; const p = doodlePos(e); lastX = p.x; lastY = p.y; dc.setPointerCapture(e.pointerId); });
+dc.addEventListener("pointermove", e => {
+  if (!drawing) return;
+  const p = doodlePos(e);
+  dctx.strokeStyle = doodleColour;
+  dctx.beginPath(); dctx.moveTo(lastX, lastY); dctx.lineTo(p.x, p.y); dctx.stroke();
+  lastX = p.x; lastY = p.y;
+});
+["pointerup","pointercancel","pointerleave"].forEach(ev => dc.addEventListener(ev, () => drawing = false));
+$("clearDoodle").addEventListener("click", () => dctx.clearRect(0,0,dc.width,dc.height));
+$("openDoodle").addEventListener("click", () => $("doodleModal").classList.add("open"));
+$("closeDoodle").addEventListener("click", () => $("doodleModal").classList.remove("open"));
+
 /* ---------- game pop-up ---------- */
 let stopGame = () => {};
-const GAME_TITLES = { dodge:"🚗 Car Dodge", memory:"🧠 Car Memory", whack:"🏎️ Whack-a-Car" };
+const GAME_TITLES = { dodge:"🚗 Car Dodge", memory:"🧠 Car Memory", whack:"🏎️ Whack-a-Car", quiz:"❓ Brain Quiz" };
+const GAME_IDS = ["dodge","memory","whack","quiz"];
 function openGame(name){
   stopGame();
-  ["dodge","memory","whack"].forEach(g => $("g-"+g).style.display = (g===name?"block":"none"));
+  GAME_IDS.forEach(g => $("g-"+g).style.display = (g===name?"block":"none"));
   $("gameTitle").textContent = GAME_TITLES[name];
   $("gameModal").classList.add("open");
-  stopGame = { dodge:initDodge, memory:initMemory, whack:initWhack }[name]();
+  stopGame = { dodge:initDodge, memory:initMemory, whack:initWhack, quiz:initQuiz }[name]();
 }
 function closeGame(){ stopGame(); stopGame=()=>{}; $("gameModal").classList.remove("open"); }
 document.querySelectorAll("[data-game]").forEach(b => b.addEventListener("click", () => openGame(b.dataset.game)));
@@ -521,6 +670,8 @@ function initDodge(){
     for(const car of cars){
       if(car.x<px+CW && car.x+CW>px && car.y<H-70+CH && car.y+CH>H-70){
         running=false; $("gameCard").classList.add("shake"); setTimeout(()=>$("gameCard").classList.remove("shake"),400);
+        const earned = Math.floor(score/100);
+        if (earned > 0) addPoints(earned);
         ctx.fillStyle="rgba(0,0,0,.6)"; ctx.fillRect(0,0,W,H); ctx.fillStyle="#fff"; ctx.font="bold 20px sans-serif"; ctx.textAlign="center"; ctx.fillText("Crash! Press Start",W/2,H/2); return;
       }
     }
@@ -544,7 +695,7 @@ function initMemory(){
   function reset(){
     timeouts.forEach(clearTimeout); timeouts=[];
     grid.innerHTML=""; first=null; lock=false; moves=0; matched=0; $("memMoves").textContent="Moves: 0";
-    [...EMOJI,...EMOJI].sort(()=>Math.random()-0.5).forEach(sym=>{
+    shuffle([...EMOJI,...EMOJI]).forEach(sym=>{
       const cell=document.createElement("div"); cell.className="cell"; cell.dataset.sym=sym; cell.textContent="❔";
       cell.onclick=()=>flip(cell); grid.appendChild(cell);
     });
@@ -556,7 +707,7 @@ function initMemory(){
     moves++; $("memMoves").textContent="Moves: "+moves;
     if(first.dataset.sym===cell.dataset.sym){
       first.classList.replace("open","done"); cell.classList.replace("open","done"); first=null; matched+=2;
-      if(matched===EMOJI.length*2) $("memMoves").textContent="You won in "+moves+" moves! 🎉";
+      if(matched===EMOJI.length*2){ $("memMoves").textContent="You won in "+moves+" moves! 🎉"; addPoints(5); }
     } else {
       lock=true; const a=first, b=cell;
       timeouts.push(setTimeout(()=>{ [a,b].forEach(c=>{ c.classList.remove("open"); c.textContent="❔"; }); first=null; lock=false; },700));
@@ -581,10 +732,68 @@ function initWhack(){
     clearInterval(timer); clearInterval(mole); score=0; timeLeft=20; active=true; pop=null;
     [...grid.children].forEach(c=>c.textContent=""); label(); showCar();
     mole=setInterval(showCar,700);
-    timer=setInterval(()=>{ timeLeft--; label(); if(timeLeft<=0){ active=false; clearInterval(timer); clearInterval(mole); if(pop!==null) grid.children[pop].textContent=""; $("whackScore").textContent="Time's up! Score: "+score+" 🎉"; } },1000);
+    timer=setInterval(()=>{
+      timeLeft--; label();
+      if(timeLeft<=0){
+        active=false; clearInterval(timer); clearInterval(mole);
+        if(pop!==null) grid.children[pop].textContent="";
+        $("whackScore").textContent="Time's up! Score: "+score+" 🎉";
+        if (score>0) addPoints(Math.min(score,10));
+      }
+    },1000);
   };
   return () => { active=false; clearInterval(timer); clearInterval(mole); };
 }
-</script>
-</body>
-</html>
+
+/* ---------- Brain Quiz ---------- */
+const QUIZ = [
+  { q:"How many legs does a spider have?", a:["6","8","10","12"], correct:1 },
+  { q:"Which planet is closest to the Sun?", a:["Venus","Earth","Mercury","Mars"], correct:2 },
+  { q:"What is 7 × 8?", a:["54","56","63","48"], correct:1 },
+  { q:"What is the fastest land animal?", a:["Lion","Cheetah","Horse","Greyhound"], correct:1 },
+  { q:"How many minutes are in an hour?", a:["60","100","30","90"], correct:0 },
+  { q:"Which is the tallest animal in the world?", a:["Elephant","Giraffe","Ostrich","Polar bear"], correct:1 },
+  { q:"How many sides does a hexagon have?", a:["5","7","6","8"], correct:2 },
+  { q:"What gas do plants take in from the air to make food?", a:["Oxygen","Nitrogen","Carbon dioxide","Helium"], correct:2 },
+  { q:"Which is the largest ocean on Earth?", a:["Atlantic","Pacific","Indian","Arctic"], correct:1 },
+  { q:"What is 12 + 15?", a:["27","26","37","28"], correct:0 }
+];
+function initQuiz(){
+  const qs = shuffle(QUIZ).slice(0,8);
+  let i = 0, score = 0;
+  function show(){
+    $("quizProgress").textContent = "Question " + (i+1) + " of " + qs.length;
+    $("quizQ").textContent = qs[i].q;
+    $("quizMsg").textContent = "";
+    $("quizNext").style.display = "none";
+    const opts = $("quizOpts"); opts.innerHTML = "";
+    qs[i].a.forEach((txt, idx) => {
+      const b = document.createElement("button");
+      b.textContent = txt;
+      b.onclick = () => choose(idx, b);
+      opts.appendChild(b);
+    });
+    $("quizAgain").style.display = "none";
+  }
+  function choose(idx, btn){
+    const correct = qs[i].correct;
+    [...$("quizOpts").children].forEach(b => b.disabled = true);
+    if (idx === correct) {
+      btn.classList.add("right"); score++; addPoints(2);
+      $("quizMsg").textContent = "Correct! 🎉";
+    } else {
+      btn.classList.add("wrong");
+      $("quizOpts").children[correct].classList.add("right");
+      $("quizMsg").textContent = "Nice try! The answer was " + qs[i].a[correct] + ".";
+    }
+    $("quizNext").style.display = "inline-block";
+  }
+  $("quizNext").onclick = () => {
+    i++;
+    if (i < qs.length) show();
+    else {
+      $("quizProgress").textContent = "Quiz finished!";
+      $("quizQ").textContent = "You got " + score + " out of " + qs.length + " right! 🏆";
+      $("quizOpts").innerHTML = "";
+      $("quizMsg").textContent = "";
+      $("quizN
