@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fawad's Dashboard</title>
+<style>
+  :root { --red:#e62429; --blue:#1e4fd8; --green:#22c55e; --dark:#0b1a3a; --white:#fff; --yellow:#ffd400; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; min-height:100%; }
+  body {
+    font-family:"Comic Sans MS","Trebuchet MS",system-ui,sans-serif;
+    color:var(--white);
+    background:
+      radial-gradient(circle at 20% 20%, rgba(230,36,41,.35) 0, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(30,79,216,.45) 0, transparent 45%),
+      linear-gradient(160deg, var(--red) 0%, var(--dark) 45%, var(--blue) 100%);
+    background-attachment:fixed;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    display:flex; flex-direction:column; min-height:100vh;
+  }
+
+  header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px 4px; }
+  h1 { margin:0; font-size:clamp(1.2rem,4.5vw,2rem); text-shadow:3px 3px 0 var(--dark); animation:pop .6s ease-out; }
+  .hbtns { display:flex; gap:6px; flex-wrap:wrap; }
+
+  button {
+    cursor:pointer; border:none; border-radius:14px; padding:9px 14px; min-height:40px;
+    font-size:.95rem; font-weight:bold; font-family:inherit; color:var(--dark); background:var(--green);
+    transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;
+    box-shadow:0 4px 0 rgba(0,0,0,.35); touch-action:manipulation;
+  }
+  button:hover { transform:translateY(-2px) scale(1.03); filter:brightness(1.1); box-shadow:0 6px 0 rgba(0,0,0,.35), 0 0 14px rgba(255,255,255,.45); }
+  button:active { transform:translateY(3px) scale(.96); box-shadow:0 1px 0 rgba(0,0,0,.35); }
+  button.blue { background:var(--blue); color:var(--white); }
+  button.yellow { background:var(--yellow); }
+  button.red { background:var(--red); color:var(--white); }
+  button.kill { border:3px solid var(--white); animation:glow 1.8s ease-in-out infinite; }
+  button:disabled { opacity:.5; cursor:default; transform:none; }
+  @keyframes glow { 50% { box-shadow:0 0 18px rgba(230,36,41,1), 0 0 3px #fff; } }
+
+  nav.tabs { display:flex; gap:6px; padding:6px 12px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  nav.tabs button { flex:1 0 auto; background:rgba(255,255,255,.15); color:var(--white); box-shadow:none; }
+  nav.tabs button.active { background:var(--white); color:var(--dark); }
+
+  main { flex:1; padding:6px 12px 24px; }
+  .panel { display:none; grid-template-columns:1fr; gap:12px; animation:fadeIn .35s ease-out; }
+  .panel.active { display:grid; }
+  @media (min-width:700px) { .panel { grid-template-columns:1fr 1fr; } }
+  @media (min-width:1000px) { .panel { grid-template-columns:repeat(3,1fr); } }
+  .panel.single { grid-template-columns:1fr; }
+
+  .card { border:3px solid var(--white); border-radius:18px; padding:14px; background:rgba(11,26,58,.92); box-shadow:4px 4px 0 var(--dark); min-width:0; animation:rise .45s ease-out both; }
+  .card h2 { margin:0 0 8px; font-size:1.1rem; }
+  .red h2{color:#ff9b9d} .blue h2{color:#9ec1ff} .green h2{color:#8ff0b3} .yellowh h2{color:#ffe680}
+  .big { font-size:1.15rem; font-weight:bold; margin:4px 0; line-height:1.35; }
+  .small { font-size:.85rem; color:#cfe0ff; margin:6px 0 0; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:8px; }
+
+  .tiles { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .tile { display:flex; align-items:center; justify-content:center; text-align:center; min-height:48px; padding:8px; border-radius:14px; font-weight:bold; color:var(--white); text-decoration:none; transition:transform .12s; }
+  .tile:hover { transform:translateY(-2px) scale(1.03); }
+  .tile.red{background:var(--red)} .tile.blue{background:var(--blue)} .tile.green{background:var(--green);color:var(--dark)} .tile.yellow{background:var(--yellow);color:var(--dark)}
+
+  .notice { background:rgba(255,255,255,.1); border-left:5px solid var(--green); border-radius:8px; padding:8px 10px; margin:6px 0; font-size:.95rem; }
+  .fact { background:rgba(255,255,255,.1); border-radius:12px; padding:10px; font-size:1rem; line-height:1.4; animation:fadeIn .4s ease-out; }
+
+  .points { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .pointsnum { font-size:1.8rem; font-weight:bold; color:var(--yellow); }
+  .badges { display:flex; gap:6px; flex-wrap:wrap; }
+  .badge { background:rgba(255,255,255,.15); border-radius:12px; padding:4px 8px; font-size:.85rem; }
+  .badge.locked { opacity:.35; }
+
+  details.more { margin-top:8px; background:rgba(255,255,255,.08); border-radius:12px; padding:8px 10px; }
+  details.more summary { cursor:pointer; font-weight:bold; list-style:none; }
+  details.more summary::-webkit-details-marker { display:none; }
+  details.more summary::before { content:"▶ "; }
+  details.more[open] summary::before { content:"▼ "; }
+  .termrow { display:flex; justify-content:space-between; gap:8px; padding:4px 0; border-bottom:1px dashed rgba(255,255,255,.2); font-size:.9rem; }
+
+  .meme { background:var(--white); color:var(--dark); border-radius:14px; padding:14px; text-align:center; min-height:150px; display:flex; flex-direction:column; justify-content:center; gap:6px; animation:fadeIn .35s ease-out; }
+  .meme .emo { font-size:2.6rem; }
+  .meme .top { font-weight:bold; font-size:1rem; }
+  .meme .bottom { font-size:.9rem; }
+  .meme-nav { display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+  .dots { font-size:.85rem; color:#cfe0ff; }
+
+  .joke { font-size:1.1rem; font-weight:bold; min-height:70px; animation:fadeIn .35s ease-out; }
+  .soundbtns { display:flex; gap:8px; flex-wrap:wrap; }
+
+  .qopts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+  .qopts button { background:var(--blue); color:var(--white); font-size:.95rem; }
+  .qopts button.right { background:var(--green); color:var(--dark); }
+  .qopts button.wrong { background:var(--red); color:var(--white); }
+
+  .palette { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
+  .swatch { width:34px; height:34px; min-height:34px; padding:0; border-radius:50%; border:3px solid var(--white); box-shadow:none; }
+  .swatch.on { outline:3px solid var(--yellow); }
+  #doodle { display:block; width:100%; max-width:100%; height:auto; aspect-ratio:1/1; background:var(--white); border-radius:12px; border:3px solid var(--white); touch-action:none; }
+
+  /* loader: hides when ready, and always hides itself after 4 seconds */
+  #loader { position:fixed; inset:0; background:var(--dark); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:150; transition:opacity .4s; animation:autoHide .4s ease-in 4s forwards; }
+  #loader.hide { opacity:0; pointer-events:none; }
+  @keyframes autoHide { to { opacity:0; visibility:hidden; pointer-events:none; } }
+  .dogwrap { width:130px; height:130px; border-radius:50%; overflow:hidden; border:5px solid var(--white); box-shadow:0 0 24px rgba(255,255,255,.35); animation:spin 1.6s linear infinite; background:#f5b25c; }
+  .dogwrap img { width:100%; height:100%; object-fit:cover; display:block; }
+  .dogfallback { font-size:5rem; display:none; animation:spin 1.6s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .modal { position:fixed; inset:0; background:rgba(5,12,30,.85); display:none; align-items:center; justify-content:center; z-index:100; padding:12px; }
+  .modal.open { display:flex; animation:fadeIn .25s ease-out; }
+  .modalcard { border:4px solid var(--white); border-radius:20px; padding:14px; background:var(--dark); box-shadow:6px 6px 0 #000; width:min(440px,100%); max-height:92vh; overflow:auto; animation:pop .3s ease-out; }
+  .modalhead { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
+  .modalcard h2 { margin:0; font-size:1.2rem; }
+  input { width:100%; padding:10px; border-radius:12px; border:3px solid var(--green); font-size:1rem; font-family:inherit; margin:6px 0; }
+  canvas.game { display:block; margin:6px auto; border-radius:12px; background:#06122a; border:3px solid var(--white); touch-action:none; max-width:100%; }
+  .controls { display:flex; gap:10px; justify-content:center; margin-top:6px; }
+  .controls button { font-size:1.3rem; padding:6px 22px; }
+  .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; max-width:300px; margin:6px auto; }
+  .cell { aspect-ratio:1; border-radius:10px; font-size:1.5rem; display:flex; align-items:center; justify-content:center; background:var(--blue); cursor:pointer; user-select:none; border:3px solid var(--white); transition:transform .15s; }
+  .cell:hover { transform:scale(1.08); }
+  .cell.open{background:var(--white)} .cell.done{background:var(--green)}
+  .shake { animation:shake .4s; }
+  @keyframes shake { 20%,60% { transform:translateX(-6px); } 40%,80% { transform:translateX(6px); } }
+  .toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:var(--green); color:var(--dark); padding:8px 16px; border-radius:12px; font-weight:bold; z-index:300; display:none; max-width:90vw; text-align:center; }
+
+  @keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+  @keyframes pop { from { transform:scale(.7); opacity:0; } to { transform:scale(1); opacity:1; } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+  @media (max-width:420px) {
+    h1 { font-size:1.15rem; }
+    button { padding:8px 11px; font-size:.9rem; }
+    .tiles { grid-template-columns:1fr; }
+    .qopts { grid-template-columns:1fr; }
+    .grid { max-width:100%; }
+    .modalcard { padding:12px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="dogwrap"><img src="dog.png" alt="" onerror="this.style.display='none';document.querySelector('.dogfallback').style.display='block';document.querySelector('.dogwrap').style.animation='none';"></div>
+  <div class="dogfallback">🐕</div>
+  <p>Loading...</p>
+</div>
+
+<header>
+  <h1 id="greet">Hey Fawad! 🕷️</h1>
+  <div class="hbtns">
+    <button class="blue" id="openSettings">⚙️ Settings</button>
+    <button class="red kill" id="kill" title="Close this tab now (or press Esc)">⛔ KILL</button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="active" data-tab="home">🏠 Home</button>
+  <button data-tab="fun">😂 Fun</button>
+  <button data-tab="school">📚 School</button>
+  <button data-tab="games">🎮 Games</button>
+</nav>
+
+<main>
+  <section class="panel active" id="tab-home">
+    <div class="card red">
+      <h2>🏠 Home Time</h2>
+      <div class="big" id="homeCount">Loading...</div>
+      <p class="small">3:10 pm on normal days. 2:00 pm on the last day of term.</p>
+    </div>
+    <div class="card blue">
+      <h2>📅 Next Holiday</h2>
+      <div class="big" id="nextHoliday">Loading...</div>
+      <p class="small" id="nextHolidaySub"></p>
+    </div>
+    <div class="card yellowh">
+      <h2>🏆 Your Points</h2>
+      <div class="points">
+        <div class="pointsnum" id="pointsNum">0</div>
+        <div class="small">points</div>
+      </div>
+      <div class="badges" id="badges" style="margin-top:8px"></div>
+      <p class="small">Earn points by playing games and the brain quiz.</p>
+    </div>
+    <div class="card green">
+      <h2>🔔 Notifications</h2>
+      <div id="notices"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="tab-fun">
+    <div class="card green">
+      <h2>💡 Fact of the Day</h2>
+      <p class="fact" id="factText">Loading...</p>
+    </div>
+
+    <div class="card green">
+      <h2>😂 Joke Time</h2>
+      <p class="joke" id="jokeText">Tap the button for a joke!</p>
+      <div class="row">
+        <button id="jokeBtn">New Joke 🎲</button>
+        <button class="blue" id="todayJoke">Today's Joke</button>
+      </div>
+    </div>
+
+    <div class="card yellowh">
+      <h2>🖼️ Meme of the Day</h2>
+      <div class="meme" id="memeBox"></div>
+      <div class="meme-nav">
+        <button class="blue" id="memePrev">◀</button>
+        <span class="dots" id="memeDots"></span>
+        <button class="blue" id="memeNext">▶</button>
+      </div>
+      <p class="small">New memes every day. Tap ◀ ▶ to look at the others.</p>
+    </div>
+
+    <div class="card red">
+      <h2>🔊 Let Me Know</h2>
+      <div class="soundbtns">
+        <button class="yellow" id="soundPlay">▶ Play</button>
+        <button class="blue" id="soundPause">⏸ Pause</button>
+        <button class="red" id="soundStop">⏹ Stop</button>
+      </div>
+      <p class="small" id="soundStatus">Ready</p>
+      <audio id="snd" src="let-me-know.mp3" preload="auto"></audio>
+    </div>
+
+    <div class="card blue">
+      <h2>🎨 Doodle Pad</h2>
+      <p class="small">Draw anything you like!</p>
+      <button class="blue" id="openDoodle">Open Doodle Pad ✏️</button>
+    </div>
+  </section>
+
+  <section class="panel" id="tab-school">
+    <div class="card green">
+      <h2>📚 School Links</h2>
+      <div class="tiles">
+        <a class="tile blue" href="https://www.office.com" target="_blank" rel="noopener">Office 365</a>
+        <a class="tile red" href="https://teams.microsoft.com" target="_blank" rel="noopener">Teams</a>
+        <a class="tile green" href="https://www.magmamath.com" target="_blank" rel="noopener">Magma Maths</a>
+        <a class="tile yellow" href="https://play.ttrockstars.com/" target="_blank" rel="noopener">TT Rockstars</a>
+      </div>
+    </div>
+
+    <div class="card blue">
+      <h2>📅 Coming Up</h2>
+      <div id="countdowns"></div>
+      <details class="more">
+        <summary>See all term dates</summary>
+        <div id="allTerms"></div>
+      </details>
+      <p class="small">William Hulme's Grammar School term dates 2026–27.</p>
+    </div>
+  </section>
+
+  <section class="panel single" id="tab-games">
+    <div class="card red">
+      <h2>🎮 Pick a Game</h2>
+      <div class="row">
+        <button class="red" data-game="dodge">🚗 Car Dodge</button>
+        <button class="blue" data-game="memory">🧠 Car Memory</button>
+        <button class="yellow" data-game="whack">🏎️ Whack-a-Car</button>
+        <button class="green" data-game="quiz">❓ Brain Quiz</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="gameModal">
+  <div class="modalcard" id="gameCard">
+    <div class="modalhead"><h2 id="gameTitle">Game</h2><button class="red" id="closeGame">✖ Close</button></div>
+
+    <div id="g-dodge" style="display:none">
+      <div class="big" id="dodgeScore">Score: 0</div>
+      <canvas id="dodge" class="game" width="260" height="340"></canvas>
+      <div class="controls"><button id="dl">◀</button><button id="dr">▶</button></div>
+      <p class="small">Arrow keys or the buttons.</p>
+      <button id="dodgeStart">Start / Restart</button>
+    </div>
+
+    <div id="g-memory" style="display:none">
+      <div class="big" id="memMoves">Moves: 0</div>
+      <div class="grid" id="memGrid"></div>
+      <button id="memReset">New Game</button>
+    </div>
+
+    <div id="g-whack" style="display:none">
+      <div class="big" id="whackScore">Score: 0 · Time: 20</div>
+      <div class="grid" id="whackGrid"></div>
+      <button id="whackStart">Start 20-second round</button>
+    </div>
+
+    <div id="g-quiz" style="display:none">
+      <div class="big" id="quizProgress">Question 1 of 8</div>
+      <p class="big" id="quizQ"></p>
+      <div class="qopts" id="quizOpts"></div>
+      <p class="small" id="quizMsg"></p>
+      <button id="quizNext" style="display:none">Next ➜</button>
+      <button id="quizAgain" style="display:none" class="blue">Play Again</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="doodleModal">
+  <div class="modalcard">
+    <div class="modalhead"><h2>🎨 Doodle Pad</h2><button class="red" id="closeDoodle">✖ Close</button></div>
+    <div class="palette" id="palette"></div>
+    <canvas id="doodle" width="300" height="300"></canvas>
+    <div class="row"><button class="blue" id="clearDoodle">🧽 Clear</button></div>
+  </div>
+</div>
+
+<div class="modal" id="settingsModal">
+  <div class="modalcard">
+    <div class="modalhead"><h2>⚙️ Settings</h2><button class="red" id="closeSettings">✖ Close</button></div>
+    <p class="small">What should the dashboard call you?</p>
+    <input id="nameInput" maxlength="20" placeholder="Your name">
+    <div class="row">
+      <button id="saveName">Save name ✔</button>
+      <button class="blue" id="resetName">Reset to Fawad</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Saved!</div>
+
+<audio id="killSnd" src="kill.mp4" preload="auto"></audio>
+
+<script>
+function $(id){ return document.getElementById(id); }
+function ymd(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function parse(s){ return new Date(s + "T00:00:00"); }
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display="none",1800); }
+function dayIndex(){ return Math.floor(Date.now()/86400000); }
+function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(p=>p[1]); }
+
+/* loader */
+function hideLoader(){ const l=$("loader"); if (l) l.classList.add("hide"); }
+window.addEventListener("load", () => setTimeout(hideLoader, 900));
+setTimeout(hideLoader, 4000);
+
+/* points */
+let memPoints = 0;
+function getPoints(){ try { return Number(localStorage.getItem("fawadPoints")||0); } catch(e){ return memPoints; } }
+function addPoints(n){
+  const total = getPoints() + n;
+  memPoints = total;
+  try { localStorage.setItem("fawadPoints", String(total)); } catch(e){}
+  renderPoints();
+  if (n > 0) toast("+" + n + " points! ⭐");
+}
+const BADGES = [
+  { at:10, label:"🏁 Rookie Racer" },
+  { at:25, label:"⚡ Super Speedster" },
+  { at:50, label:"🏆 Legend" }
+];
+function renderPoints(){
+  const p = getPoints();
+  $("pointsNum").textContent = p;
+  $("badges").innerHTML = BADGES.map(b => '<span class="badge '+(p>=b.at?'':'locked')+'">'+b.label+' ('+b.at+')</span>').join("");
+}
+renderPoints();
+
+/* tabs */
+document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("nav.tabs button").forEach(x => x.classList.toggle("active", x===b));
+  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "tab-"+b.dataset.tab));
+}));
+
+/* name */
+const DEFAULT_NAME = "Fawad";
+let memoryName = null;
+function getName(){
+  try { const v = localStorage.getItem("fawadName"); if (v) return v; } catch(e){}
+  return memoryName || DEFAULT_NAME;
+}
+function setName(n){ memoryName = n; try { localStorage.setItem("fawadName", n); } catch(e){} applyName(); }
+function applyName(){ $("greet").textContent = "Hey " + getName() + "! 🕷️"; }
+applyName();
+
+/* kill switch: plays the sound, then closes the tab */
+let killing = false;
+function kill(){
+  if (killing) return;
+  killing = true;
+  let done = false;
+  const go = () => { if (done) return; done = true; window.close(); window.location.replace("about:blank"); };
+  const s = $("killSnd");
+  if (!s) { go(); return; }
+  s.currentTime = 0;
+  s.addEventListener("ended", go, { once:true });
+  const p = s.play();
+  if (p && p.catch) p.catch(go);
+  setTimeout(go, 2500);
+}
+$("kill").addEventListener("click", kill);
+document.addEventListener("keydown", e => { if (e.key === "Escape") kill(); });
+
+/* settings */
+$("openSettings").addEventListener("click", () => { $("nameInput").value = getName(); $("settingsModal").classList.add("open"); });
+$("closeSettings").addEventListener("click", () => $("settingsModal").classList.remove("open"));
+$("saveName").addEventListener("click", () => {
+  const n = $("nameInput").value.trim();
+  if (!n) { toast("Type a name first"); return; }
+  setName(n); $("settingsModal").classList.remove("open"); toast("Saved! 🎉");
+});
+$("resetName").addEventListener("click", () => { $("nameInput").value = DEFAULT_NAME; });
+
+/* school calendar: William Hulme's Grammar School 2026-27 */
+const TERMS = [
+  { start:"2026-09-03", end:"2026-12-18" },
+  { start:"2027-01-05", end:"2027-03-25" },
+  { start:"2027-04-13", end:"2027-07-16" }
+];
+const CLOSED_RANGES = [
+  ["2026-10-26","2026-10-30","Half term"],
+  ["2026-12-03","2026-12-03","Assessment Day"],
+  ["2026-12-04","2026-12-04","Staff Planning Day"],
+  ["2027-02-15","2027-02-19","Half term"],
+  ["2027-05-03","2027-05-03","Bank Holiday"],
+  ["2027-05-31","2027-06-04","Half term"]
+];
+const KEY_DATES = [
+  { name:"Autumn half term", date:"2026-10-26", end:"2026-10-30", back:"2026-11-02" },
+  { name:"Christmas holidays", date:"2026-12-18", end:"2027-01-04", back:"2027-01-05" },
+  { name:"Spring half term", date:"2027-02-15", end:"2027-02-19", back:"2027-02-22" },
+  { name:"Easter holidays", date:"2027-03-25", end:"2027-04-12", back:"2027-04-13" },
+  { name:"Summer half term", date:"2027-05-31", end:"2027-06-04", back:"2027-06-07" },
+  { name:"Summer holidays", date:"2027-07-16", end:"2027-09-01", back:"2027-09-02" }
+];
+function closedReason(s){ for (const [a,b,l] of CLOSED_RANGES) if (s>=a && s<=b) return l; return null; }
+function isSchoolDay(d){
+  if (d.getDay()===0 || d.getDay()===6) return false;
+  const s = ymd(d);
+  return TERMS.some(t => s>=t.start && s<=t.end) && !closedReason(s);
+}
+function finishTime(d){ return TERMS.some(t => ymd(d)===t.end) ? {h:14,m:0} : {h:15,m:10}; }
+function nextSchoolDay(from){
+  const d = new Date(from); d.setHours(0,0,0,0);
+  for (let i=1;i<400;i++){ d.setDate(d.getDate()+1); if (isSchoolDay(d)) return new Date(d); }
+  return null;
+}
+function daysTill(s){ const d=parse(s), n=new Date(); n.setHours(0,0,0,0); return Math.ceil((d-n)/86400000); }
+
+/* home time */
+function updateHomeCount(){
+  const now = new Date();
+  if (!isSchoolDay(now)) {
+    const reason = closedReason(ymd(now));
+    const nxt = nextSchoolDay(now);
+    const when = nxt ? nxt.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"}) : "soon";
+    $("homeCount").textContent = (reason ? "No school today (" + reason + ")! 🎉" : "No school today! 🎉") + " Back " + when + ".";
+    return;
+  }
+  const f = finishTime(now);
+  const finish = new Date(now); finish.setHours(f.h, f.m, 0, 0);
+  if (now >= finish) { $("homeCount").textContent = "Home time! 🏠🎉 Go get your bag!"; return; }
+  const diff = Math.floor((finish - now) / 60000), h = Math.floor(diff/60), m = diff % 60;
+  const funny = diff < 15 ? "almost there! 🤞" : diff < 60 ? "the bell is coming! 🔔" : "hang in there 😴";
+  $("homeCount").textContent = (h ? h + "h " : "") + m + "m till home time, " + funny;
+}
+updateHomeCount(); setInterval(updateHomeCount, 15000);
+
+/* next holiday, coming up, all terms */
+(function(){
+  const upcoming = KEY_DATES.filter(k => daysTill(k.end) >= 0);
+  const next = upcoming[0];
+  if (next) {
+    const d = daysTill(next.date);
+    $("nextHoliday").textContent = d <= 0 ? next.name + " is on now! 🎉" : next.name + " in " + (d>=14 ? Math.floor(d/7)+" weeks" : d+" day"+(d!==1?"s":"")) + "!";
+    $("nextHolidaySub").textContent = "Starts " + parse(next.date).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"}) + ".";
+  } else {
+    $("nextHoliday").textContent = "No more holidays this year.";
+  }
+  $("countdowns").innerHTML = upcoming.slice(0,3).map(k => {
+    const d = daysTill(k.date);
+    return '<div class="termrow"><span>'+k.name+'</span><span>'+(d<=0?"now":d+" days")+'</span></div>';
+  }).join("");
+  $("allTerms").innerHTML = KEY_DATES.map(k => {
+    return '<div class="termrow"><span>'+k.name+'</span><span>'+parse(k.date).toLocaleDateString("en-GB",{day:"numeric",month:"short"})+'</span></div>';
+  }).join("") + '<p class="small">Last day of term finishes at 2:00 pm. Staff INSET and planning days are also closed.</p>';
+})();
+
+/* notifications */
+(function(){
+  const now=new Date(), list=[];
+  const xmas=daysTill("2026-12-25");
+  if (xmas>0) list.push("🎄 " + xmas + " days till Christmas!");
+  const r=closedReason(ymd(now));
+  if (r) list.push("🎉 School closed today: " + r + ".");
+  list.push("😂 Tap Fun for jokes, memes and facts!");
+  list.push("🕒 Home time is 3:10 pm on normal days.");
+  $("notices").innerHTML = list.map(t => '<div class="notice">'+t+'</div>').join("");
+})();
+
+/* fact of the day */
+const FACTS = [
+  "A cheetah can go from 0 to 60 mph (about 97 km/h) in around 3 seconds. 🐆",
+  "Octopuses have three hearts and blue blood. 🐙",
+  "Honey never goes off. Archaeologists have found edible honey in ancient Egyptian tombs. 🍯",
+  "A bolt of lightning is hotter than the surface of the Sun. ⚡",
+  "Bananas are berries, but strawberries aren't. 🍌",
+  "Sharks have been around longer than trees. 🦈",
+  "A group of flamingos is called a flamboyance. 🦩",
+  "Your nose can remember around 50,000 different smells. 👃",
+  "Wombat poop is cube-shaped. 🟫",
+  "The Eiffel Tower can grow about 15 cm taller in summer because the metal expands in the heat. 🗼",
+  "A day on Venus is longer than a year on Venus. 🪐",
+  "Butterflies taste with their feet. 🦋",
+  "Giraffes often sleep in short naps, adding up to only about 30 minutes to 2 hours a day. 🦒",
+  "The Pacific Ocean is the biggest ocean on Earth. 🌊"
+];
+$("factText").textContent = FACTS[dayIndex() % FACTS.length];
+
+/* jokes */
+const JOKES = [
+  "Why did the car get a ticket? It was parked in the wrong lane. Honest mistake, officer!",
+  "What do you call a car that tells bad jokes? A joke-mobile! 🚗💨",
+  "I told my maths teacher I was bad at subtraction. She said, 'Don't worry, you'll take it away from me.' 😂",
+  "Why did the spider get an A? It really nailed its web-design project. 🕷️",
+  "What do you call a sleeping dinosaur? A dino-SNORE! 🦖",
+  "Why was the maths book so sad? It had way too many problems.",
+  "What do you call a cat that loves cars? A Purr-ari! 🏎️🐱",
+  "Why did the teddy bear say no to dessert? Because it was already stuffed! 🧸",
+  "What's a race car's favourite snack? Brake-fast bars! 🍫",
+  "Why did the banana go to the doctor? It wasn't peeling well. 🍌",
+  "What do you call a fish with no eyes? A fsh. 🐟",
+  "Why did the scarecrow win an award? He was outstanding in his field! 🌾",
+  "What did the pencil say to the paper? 'I've got your back!' ✏️",
+  "Why can't you give Elsa a balloon? Because she'll let it go. 🎈",
+  "What do you call a car that sings? A Honda-tune! 🎶",
+  "How does a computer get cold? It catches a virus. 💻🤧",
+  "Why did the football team bring a ladder? To get to the high scores! ⚽",
+  "What's a skeleton's least favourite room? The living room. 💀",
+  "Why do cars make great comedians? They know how to crack up. 🚗",
+  "I'm reading a book about anti-gravity. It's impossible to put down! 📖"
+];
+const XMAS_JOKES = [
+  "What do you call a snowman with a six-pack? An abdominal snowman! ⛄",
+  "What do reindeer say before a joke? Hoof you ready for this? 🦌",
+  "Why was Santa's little helper so good at maths? He had elf-confidence! 🎅"
+];
+function setJoke(t){ const el=$("jokeText"); el.style.animation="none"; void el.offsetWidth; el.style.animation=""; el.textContent=t; }
+$("jokeBtn").addEventListener("click", () => {
+  const m = new Date().getMonth();
+  const pool = (m===10||m===11) ? JOKES.concat(XMAS_JOKES) : JOKES;
+  setJoke(pool[Math.floor(Math.random()*pool.length)]);
+});
+$("todayJoke").addEventListener("click", () => setJoke(JOKES[dayIndex() % JOKES.length]));
+
+/* meme scroller */
+const MEMES = [
+  { emo:"🚗💨", top:"Me: I'll go to bed early.", bottom:"Also me at 11pm: 'just one more race'" },
+  { emo:"📚🧠", top:"Homework: 5 minutes.", bottom:"Also homework: 'Surprise, it's 45 minutes'" },
+  { emo:"🍕😋", top:"Mum: What do you want for tea?", bottom:"Me: Anything. As long as it's pizza." },
+  { emo:"🐶🐾", top:"Dog after hearing the word 'walk':", bottom:"'I was born ready!'" },
+  { emo:"🏎️🏁", top:"Me in every game:", bottom:"'I'm the fastest car on the track!'" },
+  { emo:"😴🛌", top:"Monday morning:", bottom:"'Five more minutes' x 12" },
+  { emo:"🧦👟", top:"Where did my other sock go?", bottom:"It's living its best life somewhere." },
+  { emo:"🎮🕹️", top:"Gaming: 'One more level.'", bottom:"Sunrise: 'Oh no, you're still up?'" },
+  { emo:"🦖🦕", top:"Me pretending I'm not hungry", bottom:"Also me eating the whole snack bag." },
+  { emo:"🎄🎁", top:"Christmas countdown:", bottom:"'I'm being good, I promise!'" }
+];
+let memeIndex = dayIndex() % MEMES.length;
+function renderMeme(){
+  const m = MEMES[memeIndex];
+  $("memeBox").innerHTML = '<div class="emo">'+m.emo+'</div><div class="top"></div><div class="bottom"></div>';
+  $("memeBox").querySelector(".top").textContent = m.top;
+  $("memeBox").querySelector(".bottom").textContent = m.bottom;
+  $("memeDots").textContent = (memeIndex+1) + " / " + MEMES.length;
+}
+$("memePrev").addEventListener("click", () => { memeIndex = (memeIndex - 1 + MEMES.length) % MEMES.length; renderMeme(); });
+$("memeNext").addEventListener("click", () => { memeIndex = (memeIndex + 1) % MEMES.length; renderMeme(); });
+renderMeme();
+
+/* Let Me Know */
+const snd = $("snd");
+function soundStatus(t){ $("soundStatus").textContent = t; }
+$("soundPlay").addEventListener("click", () => {
+  snd.play().then(() => soundStatus("Playing 🔊")).catch(() => soundStatus("Couldn't play. Check the volume."));
+});
+$("soundPause").addEventListener("click", () => { snd.pause(); soundStatus("Paused ⏸"); });
+$("soundStop").addEventListener("click", () => { snd.pause(); snd.currentTime = 0; soundStatus("Stopped ⏹"); });
+snd.addEventListener("ended", () => soundStatus("Finished ✅"));
+
+/* Doodle Pad */
+const DOODLE_COLOURS = ["#000000","#e62429","#1e4fd8","#22c55e","#ffd400","#ff7ac8"];
+let doodleColour = DOODLE_COLOURS[0];
+const dc = $("doodle"), dctx = dc.getContext("2d");
+dctx.lineCap = "round"; dctx.lineJoin = "round"; dctx.lineWidth = 6;
+(function buildPalette(){
+  const pal = $("palette");
+  DOODLE_COLOURS.forEach((c,i) => {
+    const b = document.createElement("button");
+    b.className = "swatch" + (i===0?" on":"");
+    b.style.background = c;
+    b.setAttribute("aria-label", "Colour " + (i+1));
+    b.onclick = () => {
+      doodleColour = c;
+      pal.querySelectorAll(".swatch").forEach(x => x.classList.toggle("on", x===b));
+    };
+    pal.appendChild(b);
+  });
+})();
+let drawing = false, lastX = 0, lastY = 0;
+function doodlePos(e){
+  const r = dc.getBoundingClientRect();
+  return { x: (e.clientX - r.left) * (dc.width / r.width), y: (e.clientY - r.top) * (dc.height / r.height) };
+}
+dc.addEventListener("pointerdown", e => { drawing = true; const p = doodlePos(e); lastX = p.x; lastY = p.y; dc.setPointerCapture(e.pointerId); });
+dc.addEventListener("pointermove", e => {
+  if (!drawing) return;
+  const p = doodlePos(e);
+  dctx.strokeStyle = doodleColour;
+  dctx.beginPath(); dctx.moveTo(lastX, lastY); dctx.lineTo(p.x, p.y); dctx.stroke();
+  lastX = p.x; lastY = p.y;
+});
+["pointerup","pointercancel","pointerleave"].forEach(ev => dc.addEventListener(ev, () => drawing = false));
+$("clearDoodle").addEventListener("click", () => dctx.clearRect(0,0,dc.width,dc.height));
+$("openDoodle").addEventListener("click", () => $("doodleModal").classList.add("open"));
+$("closeDoodle").addEventListener("click", () => $("doodleModal").classList.remove("open"));
+
+/* game pop-up */
+let stopGame = () => {};
+const GAME_TITLES = { dodge:"🚗 Car Dodge", memory:"🧠 Car Memory", whack:"🏎️ Whack-a-Car", quiz:"❓ Brain Quiz" };
+const GAME_IDS = ["dodge","memory","whack","quiz"];
+function openGame(name){
+  stopGame();
+  GAME_IDS.forEach(g => $("g-"+g).style.display = (g===name?"block":"none"));
+  $("gameTitle").textContent = GAME_TITLES[name];
+  $("gameModal").classList.add("open");
+  stopGame = { dodge:initDodge, memory:initMemory, whack:initWhack, quiz:initQuiz }[name]();
+}
+function closeGame(){ stopGame(); stopGame=()=>{}; $("gameModal").classList.remove("open"); }
+document.querySelectorAll("[data-game]").forEach(b => b.addEventListener("click", () => openGame(b.dataset.game)));
+$("closeGame").addEventListener("click", closeGame);
+
+/* Car Dodge */
+function initDodge(){
+  const c=$("dodge"), ctx=c.getContext("2d"), W=c.width, H=c.height, CW=34, CH=50;
+  let px, cars, score, running, frame, speed, raf; const keys={};
+  function drawCar(x,y,col){ ctx.fillStyle=col; ctx.fillRect(x,y,CW,CH); ctx.fillStyle="#06122a"; ctx.fillRect(x+5,y+8,CW-10,12); ctx.fillStyle="#000"; ctx.fillRect(x-3,y+6,4,10); ctx.fillRect(x+CW-1,y+6,4,10); ctx.fillRect(x-3,y+CH-16,4,10); ctx.fillRect(x+CW-1,y+CH-16,4,10); }
+  function reset(){ px=W/2-CW/2; cars=[]; score=0; speed=2; running=true; frame=0; cancelAnimationFrame(raf); loop(); }
+  function loop(){
+    if(!running) return; frame++;
+    if(keys.left) px-=4; if(keys.right) px+=4; px=Math.max(0,Math.min(W-CW,px));
+    if(frame%45===0) cars.push({x:Math.random()*(W-CW), y:-CH, color:["#22c55e","#1e4fd8","#ffd400","#ff9b9d"][Math.floor(Math.random()*4)]});
+    if(frame%600===0) speed+=0.5;
+    ctx.clearRect(0,0,W,H); ctx.fillStyle="#333"; ctx.fillRect(W/2-2,0,4,H);
+    cars.forEach(car=>{ car.y+=speed; drawCar(car.x,car.y,car.color); });
+    cars=cars.filter(car=>car.y<H+CH);
+    for(const car of cars){
+      if(car.x<px+CW && car.x+CW>px && car.y<H-70+CH && car.y+CH>H-70){
+        running=false; $("gameCard").classList.add("shake"); setTimeout(()=>$("gameCard").classList.remove("shake"),400);
+        const earned = Math.floor(score/100);
+        if (earned > 0) addPoints(earned);
+        ctx.fillStyle="rgba(0,0,0,.6)"; ctx.fillRect(0,0,W,H); ctx.fillStyle="#fff"; ctx.font="bold 20px sans-serif"; ctx.textAlign="center"; ctx.fillText("Crash! Press Start",W/2,H/2); return;
+      }
+    }
+    drawCar(px,H-70,"#e62429"); score++; $("dodgeScore").textContent="Score: "+Math.floor(score/10);
+    raf=requestAnimationFrame(loop);
+  }
+  const kd=e=>{ if(e.key==="ArrowLeft")keys.left=true; if(e.key==="ArrowRight")keys.right=true; };
+  const ku=e=>{ if(e.key==="ArrowLeft")keys.left=false; if(e.key==="ArrowRight")keys.right=false; };
+  document.addEventListener("keydown",kd); document.addEventListener("keyup",ku);
+  const hold=(id,k)=>{ const b=$(id); b.onpointerdown=()=>keys[k]=true; b.onpointerup=()=>keys[k]=false; b.onpointerleave=()=>keys[k]=false; b.onpointercancel=()=>keys[k]=false; };
+  hold("dl","left"); hold("dr","right");
+  $("dodgeStart").onclick=reset;
+  ctx.fillStyle="#fff"; ctx.font="bold 18px sans-serif"; ctx.textAlign="center"; ctx.fillText("Press Start!",W/2,H/2);
+  return () => { running=false; cancelAnimationFrame(raf); document.removeEventListener("keydown",kd); document.removeEventListener("keyup",ku); };
+}
+
+/* Car Memory */
+function initMemory(){
+  const EMOJI=["🚗","🚙","🚕","🏎️","🚓","🚑","🚒","🛻"]; const grid=$("memGrid");
+  let first=null, lock=false, moves=0, matched=0, timeouts=[];
+  function reset(){
+    timeouts.forEach(clearTimeout); timeouts=[];
+    grid.innerHTML=""; first=null; lock=false; moves=0; matched=0; $("memMoves").textContent="Moves: 0";
+    shuffle([...EMOJI,...EMOJI]).forEach(sym=>{
+      const cell=document.createElement("div"); cell.className="cell"; cell.dataset.sym=sym; cell.textContent="❔";
+      cell.onclick=()=>flip(cell); grid.appendChild(cell);
+    });
+  }
+  function flip(cell){
+    if(lock||cell.classList.contains("open")||cell.classList.contains("done")) return;
+    cell.classList.add("open"); cell.textContent=cell.dataset.sym;
+    if(!first){ first=cell; return; }
+    moves++; $("memMoves").textContent="Moves: "+moves;
+    if(first.dataset.sym===cell.dataset.sym){
+      first.classList.replace("open","done"); cell.classList.replace("open","done"); first=null; matched+=2;
+      if(matched===EMOJI.length*2){ $("memMoves").textContent="You won in "+moves+" moves! 🎉"; addPoints(5); }
+    } else {
+      lock=true; const a=first, b=cell;
+      timeouts.push(setTimeout(()=>{ [a,b].forEach(c=>{ c.classList.remove("open"); c.textContent="❔"; }); first=null; lock=false; },700));
+    }
+  }
+  $("memReset").onclick=reset; reset();
+  return () => timeouts.forEach(clearTimeout);
+}
+
+/* Whack-a-Car */
+function initWhack(){
+  const grid=$("whackGrid"); let score=0, timeLeft=20, active=false, pop=null, timer=null, mole=null;
+  grid.innerHTML="";
+  for(let i=0;i<9;i++){
+    const cell=document.createElement("div"); cell.className="cell"; cell.dataset.i=i;
+    cell.onclick=()=>{ if(!active||Number(cell.dataset.i)!==pop) return; score++; pop=null; cell.textContent="💥"; label(); setTimeout(()=>{ if(cell.textContent==="💥") cell.textContent=""; },200); };
+    grid.appendChild(cell);
+  }
+  function label(){ $("whackScore").textContent="Score: "+score+" · Time: "+timeLeft; }
+  function showCar(){ if(!active) return; if(pop!==null) grid.children[pop].textContent=""; pop=Math.floor(Math.random()*9); grid.children[pop].textContent="🏎️"; }
+  $("whackStart").onclick=()=>{
+    clearInterval(timer); clearInterval(mole); score=0; timeLeft=20; active=true; pop=null;
+    [...grid.children].forEach(c=>c.textContent=""); label(); showCar();
+    mole=setInterval(showCar,700);
+    timer=setInterval(()=>{
+      timeLeft--; label();
+      if(timeLeft<=0){
+        active=false; clearInterval(timer); clearInterval(mole);
+        if(pop!==null) grid.children[pop].textContent="";
+        $("whackScore").textContent="Time's up! Score: "+score+" 🎉";
+        if (score>0) addPoints(Math.min(score,10));
+      }
+    },1000);
+  };
+  return () => { active=false; clearInterval(timer); clearInterval(mole); };
+}
+
+/* Brain Quiz */
+const QUIZ = [
+  { q:"How many legs does a spider have?", a:["6","8","10","12"], correct:1 },
+  { q:"Which planet is closest to the Sun?", a:["Venus","Earth","Mercury","Mars"], correct:2 },
+  { q:"What is 7 × 8?", a:["54","56","63","48"], correct:1 },
+  { q:"What is the fastest land animal?", a:["Lion","Cheetah","Horse","Greyhound"], correct:1 },
+  { q:"How many minutes are in an hour?", a:["60","100","30","90"], correct:0 },
+  { q:"Which is the tallest animal in the world?", a:["Elephant","Giraffe","Ostrich","Polar bear"], correct:1 },
+  { q:"How many sides does a hexagon have?", a:["5","7","6","8"], correct:2 },
+  { q:"What gas do plants take in from the air to make food?", a:["Oxygen","Nitrogen","Carbon dioxide","Helium"], correct:2 },
+  { q:"Which is the largest ocean on Earth?", a:["Atlantic","Pacific","Indian","Arctic"], correct:1 },
+  { q:"What is 12 + 15?", a:["27","26","37","28"], correct:0 }
+];
+function initQuiz(){
+  let qs = shuffle(QUIZ).slice(0,8);
+  let i = 0, score = 0;
+  function show(){
+    $("quizProgress").textContent = "Question " + (i+1) + " of " + qs.length;
+    $("quizQ").textContent = qs[i].q;
+    $("quizMsg").textContent = "";
+    $("quizNext").style.display = "none";
+    $("quizAgain").style.display = "none";
+    const opts = $("quizOpts"); opts.innerHTML = "";
+    qs[i].a.forEach((txt, idx) => {
+      const b = document.createElement("button");
+      b.textContent = txt;
+      b.onclick = () => choose(idx, b);
+      opts.appendChild(b);
+    });
+  }
+  function choose(idx, btn){
+    const correct = qs[i].correct;
+    [...$("quizOpts").children].forEach(b => b.disabled = true);
+    if (idx === correct) {
+      btn.classList.add("right"); score++; addPoints(2);
+      $("quizMsg").textContent = "Correct! 🎉";
+    } else {
+      btn.classList.add("wrong");
+      $("quizOpts").children[correct].classList.add("right");
+      $("quizMsg").textContent = "Nice try! The answer was " + qs[i].a[correct] + ".";
+    }
+    $("quizNext").style.display = "inline-block";
+  }
+  $("quizNext").onclick = () => {
+    i++;
+    if (i < qs.length) show();
+    else {
+      $("quizProgress").textContent = "Quiz finished!";
+      $("quizQ").textContent = "You got " + score + " out of " + qs.length + " right! 🏆";
+      $("quizOpts").innerHTML = "";
+      $("quizMsg").textContent = "";
+      $("quizNext").style.display = "none";
+      $("quizAgain").style.display = "inline-block";
+    }
+  };
+  $("quizAgain").onclick = () => { i = 0; score = 0; qs = shuffle(QUIZ).slice(0,8); show(); };
+  show();
+  return () => {};
+}
+</script>
+</body>
+</html>
