@@ -5,123 +5,144 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fawad's Dashboard</title>
 <style>
-  :root { --a:#e62429; --b:#1e4fd8; --red:#e62429; --blue:#1e4fd8; --green:#22c55e; --dark:#0b1a3a; --white:#fff; --yellow:#ffd400; }
+  :root { --red:#e62429; --blue:#1e4fd8; --green:#22c55e; --dark:#0b1a3a; --white:#fff; --yellow:#ffd400; }
   * { box-sizing:border-box; }
   html,body { margin:0; min-height:100%; }
   body {
     font-family:"Comic Sans MS","Trebuchet MS",system-ui,sans-serif;
     color:var(--white);
     background:
-      radial-gradient(circle at 20% 20%, rgba(255,255,255,.12) 0, transparent 40%),
-      linear-gradient(160deg, var(--a) 0%, var(--dark) 45%, var(--b) 100%);
+      radial-gradient(circle at 20% 20%, rgba(230,36,41,.35) 0, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(30,79,216,.45) 0, transparent 45%),
+      linear-gradient(160deg, var(--red) 0%, var(--dark) 45%, var(--blue) 100%);
     background-attachment:fixed;
-    min-height:100vh;
     padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    display:flex; flex-direction:column; min-height:100vh;
   }
-  button, .btn {
+
+  /* ---------- header ---------- */
+  header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px 4px; }
+  h1 { margin:0; font-size:clamp(1.2rem,4.5vw,2rem); text-shadow:3px 3px 0 var(--dark); animation:pop .6s ease-out; }
+  .hbtns { display:flex; gap:6px; flex-wrap:wrap; }
+
+  /* ---------- buttons ---------- */
+  button {
     cursor:pointer; border:none; border-radius:14px; padding:9px 14px; min-height:40px;
     font-size:.95rem; font-weight:bold; font-family:inherit; color:var(--dark); background:var(--green);
     transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;
     box-shadow:0 4px 0 rgba(0,0,0,.35); touch-action:manipulation;
   }
-  button:hover { transform:translateY(-2px) scale(1.03); filter:brightness(1.1); }
+  button:hover { transform:translateY(-2px) scale(1.03); filter:brightness(1.1); box-shadow:0 6px 0 rgba(0,0,0,.35), 0 0 14px rgba(255,255,255,.45); }
   button:active { transform:translateY(3px) scale(.96); box-shadow:0 1px 0 rgba(0,0,0,.35); }
   button.blue { background:var(--blue); color:var(--white); }
   button.yellow { background:var(--yellow); }
   button.red { background:var(--red); color:var(--white); }
   button.kill { border:3px solid var(--white); animation:glow 1.8s ease-in-out infinite; }
+  button:disabled { opacity:.5; cursor:default; transform:none; }
   @keyframes glow { 50% { box-shadow:0 0 18px rgba(230,36,41,1), 0 0 3px #fff; } }
-  input, select, textarea { width:100%; padding:10px; border-radius:12px; border:3px solid var(--green); font-size:1rem; font-family:inherit; margin:4px 0; background:var(--white); color:var(--dark); }
 
-  /* header */
-  header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px 4px; }
-  h1 { margin:0; font-size:clamp(1.2rem,4.5vw,2rem); text-shadow:3px 3px 0 var(--dark); }
-  .hbtns { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
-  .syncnote { font-size:.75rem; color:#cfe0ff; width:100%; text-align:right; }
-
-  /* tabs */
-  nav.tabs { display:flex; gap:6px; padding:6px 12px; overflow-x:auto; }
+  /* ---------- tabs ---------- */
+  nav.tabs { display:flex; gap:6px; padding:6px 12px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
   nav.tabs button { flex:1 0 auto; background:rgba(255,255,255,.15); color:var(--white); box-shadow:none; }
   nav.tabs button.active { background:var(--white); color:var(--dark); }
-  main { padding:6px 12px 24px; }
-  .panel { display:none; grid-template-columns:1fr; gap:12px; }
+
+  /* ---------- panels ---------- */
+  main { flex:1; padding:6px 12px 24px; }
+  .panel { display:none; grid-template-columns:1fr; gap:12px; animation:fadeIn .35s ease-out; }
   .panel.active { display:grid; }
   @media (min-width:700px) { .panel { grid-template-columns:1fr 1fr; } }
   @media (min-width:1000px) { .panel { grid-template-columns:repeat(3,1fr); } }
+  .panel.single { grid-template-columns:1fr; }
 
-  /* cards */
-  .card { border:3px solid var(--white); border-radius:18px; padding:14px; background:rgba(11,26,58,.92); box-shadow:4px 4px 0 var(--dark); min-width:0; animation:rise .4s ease-out both; }
+  .card { border:3px solid var(--white); border-radius:18px; padding:14px; background:rgba(11,26,58,.92); box-shadow:4px 4px 0 var(--dark); min-width:0; animation:rise .45s ease-out both; }
   .card h2 { margin:0 0 8px; font-size:1.1rem; }
   .red h2{color:#ff9b9d} .blue h2{color:#9ec1ff} .green h2{color:#8ff0b3} .yellowh h2{color:#ffe680}
   .big { font-size:1.15rem; font-weight:bold; margin:4px 0; line-height:1.35; }
   .small { font-size:.85rem; color:#cfe0ff; margin:6px 0 0; }
   .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:8px; }
+
+  .tiles { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .tile { display:flex; align-items:center; justify-content:center; text-align:center; min-height:48px; padding:8px; border-radius:14px; font-weight:bold; color:var(--white); text-decoration:none; transition:transform .12s; }
+  .tile:hover { transform:translateY(-2px) scale(1.03); }
+  .tile.red{background:var(--red)} .tile.blue{background:var(--blue)} .tile.green{background:var(--green);color:var(--dark)} .tile.yellow{background:var(--yellow);color:var(--dark)}
+
   .notice { background:rgba(255,255,255,.1); border-left:5px solid var(--green); border-radius:8px; padding:8px 10px; margin:6px 0; font-size:.95rem; }
-  .bk { background:rgba(255,255,255,.1); border-radius:12px; padding:10px; margin-top:8px; }
+  .fact { background:rgba(255,255,255,.1); border-radius:12px; padding:10px; font-size:1rem; line-height:1.4; animation:fadeIn .4s ease-out; }
+
+  .points { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
   .pointsnum { font-size:1.8rem; font-weight:bold; color:var(--yellow); }
-  .badges { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+  .badges { display:flex; gap:6px; flex-wrap:wrap; }
   .badge { background:rgba(255,255,255,.15); border-radius:12px; padding:4px 8px; font-size:.85rem; }
   .badge.locked { opacity:.35; }
-  .tiles { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .tile { display:flex; align-items:center; justify-content:center; text-align:center; min-height:48px; padding:8px; border-radius:14px; font-weight:bold; color:var(--white); text-decoration:none; }
-  .tile.red{background:var(--red)} .tile.blue{background:var(--blue)} .tile.green{background:var(--green);color:var(--dark)} .tile.yellow{background:var(--yellow);color:var(--dark)}
-  .termrow { display:flex; justify-content:space-between; gap:8px; padding:4px 0; border-bottom:1px dashed rgba(255,255,255,.2); font-size:.9rem; }
+
   details.more { margin-top:8px; background:rgba(255,255,255,.08); border-radius:12px; padding:8px 10px; }
-  details.more summary { cursor:pointer; font-weight:bold; }
-  .meme { background:var(--white); color:var(--dark); border-radius:14px; padding:14px; text-align:center; min-height:150px; display:flex; flex-direction:column; justify-content:center; gap:6px; }
+  details.more summary { cursor:pointer; font-weight:bold; list-style:none; }
+  details.more summary::-webkit-details-marker { display:none; }
+  details.more summary::before { content:"▶ "; }
+  details.more[open] summary::before { content:"▼ "; }
+  .termrow { display:flex; justify-content:space-between; gap:8px; padding:4px 0; border-bottom:1px dashed rgba(255,255,255,.2); font-size:.9rem; }
+
+  /* ---------- meme scroller ---------- */
+  .meme { background:var(--white); color:var(--dark); border-radius:14px; padding:14px; text-align:center; min-height:150px; display:flex; flex-direction:column; justify-content:center; gap:6px; animation:fadeIn .35s ease-out; }
   .meme .emo { font-size:2.6rem; }
-  .meme .top { font-weight:bold; }
+  .meme .top { font-weight:bold; font-size:1rem; }
+  .meme .bottom { font-size:.9rem; }
   .meme-nav { display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
-  .dots2 { font-size:.85rem; color:#cfe0ff; }
-  .joke { font-size:1.1rem; font-weight:bold; min-height:70px; }
-  .fact { background:rgba(255,255,255,.1); border-radius:12px; padding:10px; line-height:1.4; }
+  .dots { font-size:.85rem; color:#cfe0ff; }
+
+  /* ---------- joke ---------- */
+  .joke { font-size:1.1rem; font-weight:bold; min-height:70px; animation:fadeIn .35s ease-out; }
+
+  /* ---------- sound ---------- */
   .soundbtns { display:flex; gap:8px; flex-wrap:wrap; }
 
-  /* full-screen: who & PIN */
-  .fullscreen { position:fixed; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:20px; background:var(--dark); z-index:120; text-align:center; }
-  .whochoices { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
-  .whobtn { font-size:1.3rem; padding:24px 26px; border-radius:24px; min-width:150px; }
-  .whobtn .ico { font-size:2.6rem; display:block; margin-bottom:6px; }
-  .dotrow { display:flex; gap:8px; justify-content:center; margin:6px 0; }
-  .dot { width:18px; height:18px; border-radius:50%; border:3px solid var(--white); display:inline-block; }
-  .dot.on { background:var(--yellow); }
-  #pinDots.shake { animation:shake .4s; }
-  @keyframes shake { 20%,60% { transform:translateX(-8px); } 40%,80% { transform:translateX(8px); } }
-  .keypad { display:grid; grid-template-columns:repeat(3,76px); gap:10px; justify-content:center; }
-  .keybtn { width:76px; height:76px; border-radius:50%; font-size:1.6rem; padding:0; }
-
-  /* loader */
-  #loader { position:fixed; inset:0; background:var(--dark); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:150; transition:opacity .4s; animation:autoHide .4s ease-in 4s forwards; }
+  /* ---------- loader ---------- */
+  #loader { position:fixed; inset:0; background:var(--dark); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:150; transition:opacity .4s; }
   #loader.hide { opacity:0; pointer-events:none; }
-  @keyframes autoHide { to { opacity:0; visibility:hidden; pointer-events:none; } }
-  .dogwrap { width:130px; height:130px; border-radius:50%; overflow:hidden; border:5px solid var(--white); animation:spin 1.6s linear infinite; background:#f5b25c; }
+  .dogwrap { width:130px; height:130px; border-radius:50%; overflow:hidden; border:5px solid var(--white); box-shadow:0 0 24px rgba(255,255,255,.35); animation:spin 1.6s linear infinite; background:#f5b25c; }
   .dogwrap img { width:100%; height:100%; object-fit:cover; display:block; }
   .dogfallback { font-size:5rem; display:none; animation:spin 1.6s linear infinite; }
   @keyframes spin { to { transform:rotate(360deg); } }
 
-  /* modals */
+  /* ---------- modals ---------- */
   .modal { position:fixed; inset:0; background:rgba(5,12,30,.85); display:none; align-items:center; justify-content:center; z-index:100; padding:12px; }
-  .modal.open { display:flex; }
-  .modalcard { border:4px solid var(--white); border-radius:20px; padding:14px; background:var(--dark); box-shadow:6px 6px 0 #000; width:min(440px,100%); max-height:92vh; overflow:auto; }
+  .modal.open { display:flex; animation:fadeIn .25s ease-out; }
+  .modalcard { border:4px solid var(--white); border-radius:20px; padding:14px; background:var(--dark); box-shadow:6px 6px 0 #000; width:min(440px,100%); max-height:92vh; overflow:auto; animation:pop .3s ease-out; }
   .modalhead { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
   .modalcard h2 { margin:0; font-size:1.2rem; }
-  canvas.game { display:block; margin:6px auto; border-radius:12px; background:#06122a; border:3px solid var(--white); max-width:100%; touch-action:none; }
+  input { width:100%; padding:10px; border-radius:12px; border:3px solid var(--green); font-size:1rem; font-family:inherit; margin:6px 0; }
+  canvas.game { display:block; margin:6px auto; border-radius:12px; background:#06122a; border:3px solid var(--white); touch-action:none; max-width:100%; }
   .controls { display:flex; gap:10px; justify-content:center; margin-top:6px; }
   .controls button { font-size:1.3rem; padding:6px 22px; }
   .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; max-width:300px; margin:6px auto; }
-  .cell { aspect-ratio:1; border-radius:10px; font-size:1.5rem; display:flex; align-items:center; justify-content:center; background:var(--blue); cursor:pointer; user-select:none; border:3px solid var(--white); }
+  .cell { aspect-ratio:1; border-radius:10px; font-size:1.5rem; display:flex; align-items:center; justify-content:center; background:var(--blue); cursor:pointer; user-select:none; border:3px solid var(--white); transition:transform .15s; }
+  .cell:hover { transform:scale(1.08); }
   .cell.open{background:var(--white)} .cell.done{background:var(--green)}
+  .shake { animation:shake .4s; }
+  @keyframes shake { 20%,60% { transform:translateX(-6px); } 40%,80% { transform:translateX(6px); } }
   .qopts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
-  .qopts button { background:var(--blue); color:var(--white); }
+  .qopts button { background:var(--blue); color:var(--white); font-size:.95rem; }
   .qopts button.right { background:var(--green); color:var(--dark); }
   .qopts button.wrong { background:var(--red); color:var(--white); }
   .palette { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
   .swatch { width:34px; height:34px; min-height:34px; padding:0; border-radius:50%; border:3px solid var(--white); box-shadow:none; }
   .swatch.on { outline:3px solid var(--yellow); }
-  #doodle { display:block; width:100%; height:auto; aspect-ratio:1/1; background:var(--white); border-radius:12px; border:3px solid var(--white); touch-action:none; }
+  #doodle { display:block; width:100%; max-width:100%; height:auto; aspect-ratio:1/1; background:var(--white); border-radius:12px; border:3px solid var(--white); touch-action:none; }
   .toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:var(--green); color:var(--dark); padding:8px 16px; border-radius:12px; font-weight:bold; z-index:300; display:none; max-width:90vw; text-align:center; }
+
   @keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
-  @media (max-width:420px) { .tiles { grid-template-columns:1fr; } .qopts { grid-template-columns:1fr; } .keypad { grid-template-columns:repeat(3,68px); } .keybtn { width:68px; height:68px; } }
+  @keyframes pop { from { transform:scale(.7); opacity:0; } to { transform:scale(1); opacity:1; } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+  /* ---------- small phones ---------- */
+  @media (max-width:420px) {
+    h1 { font-size:1.15rem; }
+    button { padding:8px 11px; font-size:.9rem; }
+    .tiles { grid-template-columns:1fr; }
+    .qopts { grid-template-columns:1fr; }
+    .grid { max-width:100%; }
+    .modalcard { padding:12px; }
+  }
 </style>
 </head>
 <body>
@@ -132,213 +153,136 @@
   <p>Loading...</p>
 </div>
 
-<!-- WHO IS USING -->
-<section class="fullscreen" id="whoScreen" style="display:flex">
-  <h1>Who's using?</h1>
-  <div class="whochoices">
-    <button class="whobtn red" id="whoKid"><span class="ico">🕷️</span><span id="whoKidName">Fawad</span></button>
-    <button class="whobtn blue" id="whoParent"><span class="ico">👤</span><span id="whoParentName">Yousaf</span></button>
+<header>
+  <h1 id="greet">Hey Fawad! 🕷️</h1>
+  <div class="hbtns">
+    <button class="blue" id="openSettings">⚙️ Settings</button>
+    <button class="red kill" id="kill" title="Close this tab now (or press Esc)">⛔ KILL</button>
   </div>
-  <p class="small">Tap your name to get in.</p>
-</section>
+</header>
 
-<!-- PIN -->
-<section class="fullscreen" id="pinScreen">
-  <h1 id="pinTitle">Enter your PIN</h1>
-  <p id="pinSub"></p>
-  <div class="dotrow" id="pinDots"></div>
-  <div class="keypad" id="keypad"></div>
-  <button id="pinBack">← Back</button>
-</section>
+<nav class="tabs">
+  <button class="active" data-tab="home">🏠 Home</button>
+  <button data-tab="fun">😂 Fun</button>
+  <button data-tab="school">📚 School</button>
+  <button data-tab="games">🎮 Games</button>
+</nav>
 
-<!-- APP -->
-<div id="app" style="display:none">
-  <header>
-    <h1 id="greet">Hey! 🕷️</h1>
-    <div class="hbtns">
-      <button class="blue" id="openSettings">⚙️ Settings</button>
-      <button class="yellow" id="switchUser">👥 Switch</button>
-      <button class="red kill" id="kill" title="Close this tab now (or press Esc)">⛔ KILL</button>
+<main>
+  <!-- HOME -->
+  <section class="panel active" id="tab-home">
+    <div class="card red">
+      <h2>🏠 Home Time</h2>
+      <div class="big" id="homeCount">Loading...</div>
+      <p class="small">3:10 pm on normal days. 2:00 pm on the last day of term.</p>
     </div>
-    <div class="syncnote" id="syncStatus">Local only</div>
-  </header>
+    <div class="card blue">
+      <h2>📅 Next Holiday</h2>
+      <div class="big" id="nextHoliday">Loading...</div>
+      <p class="small" id="nextHolidaySub"></p>
+    </div>
+    <div class="card yellowh">
+      <h2>🏆 Your Points</h2>
+      <div class="points">
+        <div class="pointsnum" id="pointsNum">0</div>
+        <div class="small">points</div>
+      </div>
+      <div class="badges" id="badges" style="margin-top:8px"></div>
+      <p class="small">Earn points by playing games and the brain quiz.</p>
+    </div>
+    <div class="card green">
+      <h2>🔔 Notifications</h2>
+      <div id="notices"></div>
+    </div>
+  </section>
 
-  <!-- FAWAD'S BOARD -->
-  <div id="kidApp" style="display:none">
-    <nav class="tabs">
-      <button class="active" data-tab="home">🏠 Home</button>
-      <button data-tab="fun">😂 Fun</button>
-      <button data-tab="games">🎮 Games</button>
-      <button data-tab="school">📚 School</button>
-    </nav>
-    <main>
-      <section class="panel active" data-tab="home">
-        <div class="card green">
-          <h2>🔔 Notifications</h2>
-          <div id="kidNotes"></div>
-        </div>
-        <div class="card blue">
-          <h2>📆 My Bookings</h2>
-          <div id="kidBookings"></div>
-          <details class="more">
-            <summary>✏️ Ask to book a time</summary>
-            <input id="kTitle" placeholder="What do you want to do?">
-            <input id="kDate" type="date">
-            <input id="kTime" type="time">
-            <button id="kRequest">Send request 📩</button>
-          </details>
-        </div>
-        <div class="card yellowh">
-          <h2>🏆 My Points</h2>
-          <div class="pointsnum" id="kPoints">0</div>
-          <div class="small">points</div>
-          <div class="badges" id="kBadges"></div>
-        </div>
-        <div class="card red">
-          <h2>🏠 Home Time</h2>
-          <div class="big" id="homeCount">Loading...</div>
-          <p class="small">3:10 pm on normal days. 2:00 pm on the last day of term.</p>
-          <div class="big" id="nextHoliday" style="margin-top:8px">Loading...</div>
-        </div>
-      </section>
+  <!-- FUN -->
+  <section class="panel" id="tab-fun">
+    <div class="card green">
+      <h2>💡 Fact of the Day</h2>
+      <p class="fact" id="factText">Loading...</p>
+    </div>
 
-      <section class="panel" data-tab="fun">
-        <div class="card green">
-          <h2>💡 Fact of the Day</h2>
-          <p class="fact" id="factText">Loading...</p>
-        </div>
-        <div class="card green">
-          <h2>😂 Joke Time</h2>
-          <p class="joke" id="jokeText">Tap the button for a joke!</p>
-          <div class="row">
-            <button id="jokeBtn">New Joke 🎲</button>
-            <button class="blue" id="todayJoke">Today's Joke</button>
-          </div>
-        </div>
-        <div class="card yellowh">
-          <h2>🖼️ Meme of the Day</h2>
-          <div class="meme" id="memeBox"></div>
-          <div class="meme-nav">
-            <button class="blue" id="memePrev">◀</button>
-            <span class="dots2" id="memeDots"></span>
-            <button class="blue" id="memeNext">▶</button>
-          </div>
-        </div>
-        <div class="card red">
-          <h2>🔊 Let Me Know</h2>
-          <div class="soundbtns">
-            <button class="yellow" id="soundPlay">▶ Play</button>
-            <button class="blue" id="soundPause">⏸ Pause</button>
-            <button class="red" id="soundStop">⏹ Stop</button>
-          </div>
-          <p class="small" id="soundStatus">Ready</p>
-          <audio id="snd" src="let-me-know.mp3" preload="auto"></audio>
-        </div>
-        <div class="card blue">
-          <h2>🎨 Doodle Pad</h2>
-          <button class="blue" id="openDoodle">Open Doodle Pad ✏️</button>
-        </div>
-      </section>
+    <div class="card green">
+      <h2>😂 Joke Time</h2>
+      <p class="joke" id="jokeText">Tap the button for a joke!</p>
+      <div class="row">
+        <button id="jokeBtn">New Joke 🎲</button>
+        <button class="blue" id="todayJoke">Today's Joke</button>
+      </div>
+    </div>
 
-      <section class="panel" data-tab="games">
-        <div class="card red">
-          <h2>🎮 Pick a Game</h2>
-          <div class="row">
-            <button class="red" data-game="dodge">🚗 Car Dodge</button>
-            <button class="blue" data-game="memory">🧠 Car Memory</button>
-            <button class="yellow" data-game="whack">🏎️ Whack-a-Car</button>
-            <button class="green" data-game="quiz">❓ Brain Quiz</button>
-          </div>
-        </div>
-      </section>
+    <div class="card yellowh">
+      <h2>🖼️ Meme of the Day</h2>
+      <div class="meme" id="memeBox"></div>
+      <div class="meme-nav">
+        <button class="blue" id="memePrev">◀</button>
+        <span class="dots" id="memeDots"></span>
+        <button class="blue" id="memeNext">▶</button>
+      </div>
+      <p class="small">New memes every day. Tap ◀ ▶ to look at the others.</p>
+    </div>
 
-      <section class="panel" data-tab="school">
-        <div class="card green">
-          <h2>📚 School Links</h2>
-          <div class="tiles">
-            <a class="tile blue" href="https://www.office.com" target="_blank" rel="noopener">Office 365</a>
-            <a class="tile red" href="https://teams.microsoft.com" target="_blank" rel="noopener">Teams</a>
-            <a class="tile green" href="https://www.magmamath.com" target="_blank" rel="noopener">Magma Maths</a>
-            <a class="tile yellow" href="https://play.ttrockstars.com/" target="_blank" rel="noopener">TT Rockstars</a>
-          </div>
-        </div>
-        <div class="card blue">
-          <h2>📅 Coming Up</h2>
-          <div id="countdowns"></div>
-          <details class="more">
-            <summary>See all term dates</summary>
-            <div id="allTerms"></div>
-          </details>
-          <p class="small">William Hulme's Grammar School term dates 2026–27.</p>
-        </div>
-      </section>
-    </main>
-  </div>
+    <div class="card red">
+      <h2>🔊 Let Me Know</h2>
+      <div class="soundbtns">
+        <button class="yellow" id="soundPlay">▶ Play</button>
+        <button class="blue" id="soundPause">⏸ Pause</button>
+        <button class="red" id="soundStop">⏹ Stop</button>
+      </div>
+      <p class="small" id="soundStatus">Ready</p>
+      <audio id="snd" src="let-me-know.mp3" preload="auto"></audio>
+    </div>
 
-  <!-- PARENT BOARD -->
-  <div id="parentApp" style="display:none">
-    <nav class="tabs">
-      <button class="active" data-tab="overview">📊 Overview</button>
-      <button data-tab="bookings">📆 Bookings</button>
-      <button data-tab="custom">🎨 Customise</button>
-    </nav>
-    <main>
-      <section class="panel active" data-tab="overview">
-        <div class="card yellowh">
-          <h2>🏆 Fawad's Awards</h2>
-          <div class="pointsnum" id="pPoints">0</div>
-          <div class="small">points</div>
-          <div class="badges" id="pBadges"></div>
-          <p class="small" id="pStats"></p>
-        </div>
-        <div class="card blue">
-          <h2>🕒 Recent Activity</h2>
-          <div id="pActivity"></div>
-        </div>
-      </section>
+    <div class="card blue">
+      <h2>🎨 Doodle Pad</h2>
+      <p class="small">Draw anything you like!</p>
+      <button class="blue" id="openDoodle">Open Doodle Pad ✏️</button>
+    </div>
+  </section>
 
-      <section class="panel" data-tab="bookings">
-        <div class="card green">
-          <h2>🔔 Notifications</h2>
-          <div id="parNotes"></div>
-        </div>
-        <div class="card blue">
-          <h2>➕ Book in with Fawad</h2>
-          <input id="pTitle" placeholder="e.g. Build in Minecraft">
-          <input id="pDate" type="date">
-          <input id="pTime" type="time">
-          <input id="pNotes" placeholder="Notes (optional)">
-          <button id="pBook">Send booking 📨</button>
-        </div>
-        <div class="card red">
-          <h2>📆 All Bookings</h2>
-          <div id="parBookings"></div>
-        </div>
-      </section>
+  <!-- SCHOOL -->
+  <section class="panel" id="tab-school">
+    <div class="card green">
+      <h2>📚 School Links</h2>
+      <div class="tiles">
+        <a class="tile blue" href="https://www.office.com" target="_blank" rel="noopener">Office 365</a>
+        <a class="tile red" href="https://teams.microsoft.com" target="_blank" rel="noopener">Teams</a>
+        <a class="tile green" href="https://www.magmamath.com" target="_blank" rel="noopener">Magma Maths</a>
+        <a class="tile yellow" href="https://play.ttrockstars.com/" target="_blank" rel="noopener">TT Rockstars</a>
+      </div>
+    </div>
 
-      <section class="panel" data-tab="custom">
-        <div class="card blue">
-          <h2>🎨 Customise My Board</h2>
-          <p class="small">Dashboard title</p>
-          <input id="cTitle" maxlength="30">
-          <p class="small">Colour theme</p>
-          <select id="cTheme">
-            <option value="red">Red and blue</option>
-            <option value="blue">Blue and teal</option>
-            <option value="green">Green and teal</option>
-            <option value="purple">Purple and pink</option>
-          </select>
-          <button id="cSave">Save changes ✔</button>
-        </div>
-      </section>
-    </main>
-  </div>
-</div>
+    <div class="card blue">
+      <h2>📅 Coming Up</h2>
+      <div id="countdowns"></div>
+      <details class="more">
+        <summary>See all term dates</summary>
+        <div id="allTerms"></div>
+      </details>
+      <p class="small">William Hulme's Grammar School term dates 2026–27.</p>
+    </div>
+  </section>
 
-<!-- GAME POP-UP -->
+  <!-- GAMES -->
+  <section class="panel single" id="tab-games">
+    <div class="card red">
+      <h2>🎮 Pick a Game</h2>
+      <div class="row">
+        <button class="red" data-game="dodge">🚗 Car Dodge</button>
+        <button class="blue" data-game="memory">🧠 Car Memory</button>
+        <button class="yellow" data-game="whack">🏎️ Whack-a-Car</button>
+        <button class="green" data-game="quiz">❓ Brain Quiz</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Game pop-up -->
 <div class="modal" id="gameModal">
   <div class="modalcard" id="gameCard">
     <div class="modalhead"><h2 id="gameTitle">Game</h2><button class="red" id="closeGame">✖ Close</button></div>
+
     <div id="g-dodge" style="display:none">
       <div class="big" id="dodgeScore">Score: 0</div>
       <canvas id="dodge" class="game" width="260" height="340"></canvas>
@@ -346,16 +290,19 @@
       <p class="small">Arrow keys or the buttons.</p>
       <button id="dodgeStart">Start / Restart</button>
     </div>
+
     <div id="g-memory" style="display:none">
       <div class="big" id="memMoves">Moves: 0</div>
       <div class="grid" id="memGrid"></div>
       <button id="memReset">New Game</button>
     </div>
+
     <div id="g-whack" style="display:none">
       <div class="big" id="whackScore">Score: 0 · Time: 20</div>
       <div class="grid" id="whackGrid"></div>
       <button id="whackStart">Start 20-second round</button>
     </div>
+
     <div id="g-quiz" style="display:none">
       <div class="big" id="quizProgress">Question 1 of 8</div>
       <p class="big" id="quizQ"></p>
@@ -367,446 +314,92 @@
   </div>
 </div>
 
-<!-- DOODLE POP-UP -->
+<!-- Doodle pop-up -->
 <div class="modal" id="doodleModal">
   <div class="modalcard">
     <div class="modalhead"><h2>🎨 Doodle Pad</h2><button class="red" id="closeDoodle">✖ Close</button></div>
     <div class="palette" id="palette"></div>
     <canvas id="doodle" width="300" height="300"></canvas>
-    <div class="row"><button class="blue" id="clearDoodle">🧽 Clear</button></div>
+    <div class="row">
+      <button class="blue" id="clearDoodle">🧽 Clear</button>
+    </div>
   </div>
 </div>
 
-<!-- SETTINGS POP-UP -->
+<!-- Settings pop-up -->
 <div class="modal" id="settingsModal">
   <div class="modalcard">
     <div class="modalhead"><h2>⚙️ Settings</h2><button class="red" id="closeSettings">✖ Close</button></div>
-    <p class="small">Your name</p>
-    <input id="sName" maxlength="20">
-    <p class="small">Change PIN (leave blank to keep it the same)</p>
-    <input id="sCurPin" type="password" inputmode="numeric" placeholder="Current PIN">
-    <input id="sNewPin" type="password" inputmode="numeric" maxlength="6" placeholder="New PIN (4 to 6 numbers)">
-    <input id="sRepPin" type="password" inputmode="numeric" maxlength="6" placeholder="Type new PIN again">
-    <div class="row"><button id="saveSettings">Save ✔</button></div>
+    <p class="small">What should the dashboard call you?</p>
+    <input id="nameInput" maxlength="20" placeholder="Your name">
+    <div class="row">
+      <button id="saveName">Save name ✔</button>
+      <button class="blue" id="resetName">Reset to Fawad</button>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast">Saved!</div>
+
 <audio id="killSnd" src="kill.mp4" preload="auto"></audio>
 
 <script>
-/* ===== SETTINGS YOU CAN CHANGE ===== */
-// Paste your sync link here (see the setup notes). Leave empty to keep data on this device only.
-const SYNC_URL = "https://fawad-sync-yousaf-team1.vercel.app/api/sync?key=5623ba26f25582a105619f75ae90db10";
+function $(id){ return document.getElementById(id); }
+function ymd(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function parse(s){ return new Date(s + "T00:00:00"); }
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display="none",1800); }
+function dayIndex(){ return Math.floor(Date.now()/86400000); }
+function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(p=>p[1]); }
 
-const THEMES = {
-  red:   { a:"#e62429", b:"#1e4fd8" },
-  blue:  { a:"#1e4fd8", b:"#0891b2" },
-  green: { a:"#16a34a", b:"#0f766e" },
-  purple:{ a:"#7c3aed", b:"#db2777" }
-};
+/* ---------- loader ---------- */
+function hideLoader(){ const l = $("loader"); if (l) l.classList.add("hide"); }
+window.addEventListener("load", () => setTimeout(hideLoader, 900));
+setTimeout(hideLoader, 4000);
+
+/* ---------- saved data (on this device) ---------- */
+let memPoints = 0;
+function getPoints(){ try { return Number(localStorage.getItem("fawadPoints")||0); } catch(e){ return memPoints; } }
+function addPoints(n){
+  const total = getPoints() + n;
+  memPoints = total;
+  try { localStorage.setItem("fawadPoints", String(total)); } catch(e){}
+  renderPoints();
+  if (n > 0) toast("+" + n + " points! ⭐");
+}
 const BADGES = [
   { at:10, label:"🏁 Rookie Racer" },
   { at:25, label:"⚡ Super Speedster" },
   { at:50, label:"🏆 Legend" }
 ];
-const SCHOOL = {
-  terms: [
-    { start:"2026-09-03", end:"2026-12-18" },
-    { start:"2027-01-05", end:"2027-03-25" },
-    { start:"2027-04-13", end:"2027-07-16" }
-  ],
-  closed: [
-    ["2026-10-26","2026-10-30","Half term"],
-    ["2026-12-03","2026-12-03","Assessment Day"],
-    ["2026-12-04","2026-12-04","Staff Planning Day"],
-    ["2027-02-15","2027-02-19","Half term"],
-    ["2027-05-03","2027-05-03","Bank Holiday"],
-    ["2027-05-31","2027-06-04","Half term"]
-  ],
-  dates: [
-    { name:"Autumn half term", date:"2026-10-26", end:"2026-10-30" },
-    { name:"Christmas holidays", date:"2026-12-18", end:"2027-01-04" },
-    { name:"Spring half term", date:"2027-02-15", end:"2027-02-19" },
-    { name:"Easter holidays", date:"2027-03-25", end:"2027-04-12" },
-    { name:"Summer half term", date:"2027-05-31", end:"2027-06-04" },
-    { name:"Summer holidays", date:"2027-07-16", end:"2027-09-01" }
-  ]
-};
+function renderPoints(){
+  const p = getPoints();
+  $("pointsNum").textContent = p;
+  $("badges").innerHTML = BADGES.map(b => '<span class="badge '+(p>=b.at?'':'locked')+'">'+b.label+' ('+b.at+')</span>').join("");
+}
+renderPoints();
 
-/* ===== HELPERS ===== */
-function $(id){ return document.getElementById(id); }
-function el(tag, cls, text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!==undefined) e.textContent=text; return e; }
-function btn(label, cls, fn){ const b=el("button", cls||"", label); b.onclick=fn; return b; }
-function pad(n){ return String(n).padStart(2,"0"); }
-function ymd(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
-function parse(s){ return new Date(s+"T00:00:00"); }
-function daysTill(s){ const d=parse(s), n=new Date(); n.setHours(0,0,0,0); return Math.ceil((d-n)/86400000); }
-function fmtDate(s){ return parse(s).toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}); }
-function toast(msg){ const t=$("toast"); t.textContent=msg; t.style.display="block"; clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display="none",1800); }
-function shuffle(a){ return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p[1]); }
-function dayIndex(){ return Math.floor(Date.now()/86400000); }
+/* ---------- tabs ---------- */
+document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("nav.tabs button").forEach(x => x.classList.toggle("active", x===b));
+  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "tab-"+b.dataset.tab));
+}));
 
-/* ===== STATE (saved on device, and shared if SYNC_URL is set) ===== */
-function freshState(){
-  return {
-    updatedAt:0,
-    kid:{ name:"Fawad", pin:null, points:0, games:0, quizBest:0 },
-    parent:{ name:"Yousaf", pin:null, theme:"red", title:"Yousaf's Dashboard" },
-    bookings:[], notes:[], activity:[]
-  };
+/* ---------- name ---------- */
+const DEFAULT_NAME = "Fawad";
+let memoryName = null;
+function getName(){
+  try { const v = localStorage.getItem("fawadName"); if (v) return v; } catch(e){}
+  return memoryName || DEFAULT_NAME;
 }
-let state = freshState();
-let currentUser = null;
-let pollTimer = null;
+function setName(n){ memoryName = n; try { localStorage.setItem("fawadName", n); } catch(e){} applyName(); }
+function applyName(){ $("greet").textContent = "Hey " + getName() + "! 🕷️"; }
+applyName();
 
-function mergeState(s){
-  const f = freshState();
-  const merged = { ...f, ...s, kid:{ ...f.kid, ...(s.kid||{}) }, parent:{ ...f.parent, ...(s.parent||{}) } };
-  if (!merged.parent.name || merged.parent.name === "Parent") merged.parent.name = "Yousaf";
-  if (!merged.parent.title || merged.parent.title === "Parent Dashboard") merged.parent.title = "Yousaf's Dashboard";
-  return merged;
-}
-function loadLocal(){
-  try { const raw = localStorage.getItem("fawadState"); if (raw) state = mergeState(JSON.parse(raw)); } catch(e){}
-}
-function saveLocal(){ try { localStorage.setItem("fawadState", JSON.stringify(state)); } catch(e){} }
-function setSync(t){ $("syncStatus").textContent = SYNC_URL ? t : "Local only (not shared yet)"; }
-
-async function pushRemote(){
-  if (!SYNC_URL) return;
-  try {
-    await fetch(SYNC_URL, { method:"POST", headers:{ "Content-Type":"text/plain" }, body: JSON.stringify(state) });
-    setSync("✅ Synced");
-  } catch(e){ setSync("⚠️ Sync offline"); }
-}
-async function pullRemote(){
-  if (!SYNC_URL) return;
-  try {
-    const r = await fetch(SYNC_URL);
-    const remote = await r.json();
-    if (remote && remote.updatedAt && remote.updatedAt > state.updatedAt) {
-      state = mergeState(remote); saveLocal();
-      if (currentUser) renderAll();
-    }
-    setSync("✅ Synced");
-  } catch(e){ setSync("⚠️ Sync offline"); }
-}
-function touch(){ state.updatedAt = Date.now(); saveLocal(); pushRemote(); }
-
-function addNote(to, text){
-  state.notes.unshift({ id:"n"+Date.now()+Math.random(), to, text, read:false, at:Date.now() });
-  state.notes = state.notes.slice(0,50);
-}
-function addActivity(text){
-  state.activity.unshift({ text, at:Date.now() });
-  state.activity = state.activity.slice(0,30);
-}
-
-/* ===== PIN (hashed, never stored as plain numbers) ===== */
-async function hashPin(p){
-  const s = "fawad-salt:" + p;
-  try {
-    const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
-    return [...new Uint8Array(d)].map(x => x.toString(16).padStart(2,"0")).join("");
-  } catch(e){
-    let h = 0; for (let i=0;i<s.length;i++){ h = ((h<<5)-h + s.charCodeAt(i)) | 0; }
-    return "fallback" + h;
-  }
-}
-
-/* ===== WHO / PIN SCREENS ===== */
-function renderWho(){
-  $("whoKidName").textContent = state.kid.name;
-  $("whoParentName").textContent = state.parent.name;
-}
-let pin = { who:null, mode:"enter", entry:"", first:null };
-function openPin(who){
-  pin = { who, mode: state[who].pin ? "enter" : "create", entry:"", first:null };
-  $("whoScreen").style.display = "none";
-  $("pinScreen").style.display = "flex";
-  const name = state[who].name;
-  if (pin.mode === "create") {
-    $("pinTitle").textContent = "Create your PIN";
-    $("pinSub").textContent = name + ", choose 4 to 6 numbers you'll remember.";
-  } else {
-    $("pinTitle").textContent = "Enter your PIN";
-    $("pinSub").textContent = "Hi " + name + "! Type your PIN.";
-  }
-  renderDots();
-}
-function renderDots(){
-  const d = $("pinDots"); d.innerHTML = "";
-  for (let i=0;i<6;i++) d.appendChild(el("span", "dot" + (i < pin.entry.length ? " on" : "")));
-}
-function shakePin(msg){
-  $("pinSub").textContent = msg;
-  const d = $("pinDots"); d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake");
-  pin.entry = ""; renderDots();
-}
-function pressKey(k){
-  if (k === "⌫") { pin.entry = pin.entry.slice(0,-1); renderDots(); return; }
-  if (k === "✔") { return submitPin(); }
-  if (pin.entry.length >= 6) return;
-  pin.entry += k; renderDots();
-}
-async function submitPin(){
-  if (pin.entry.length < 4) return shakePin("Use at least 4 numbers.");
-  const who = pin.who;
-  if (pin.mode === "enter") {
-    const h = await hashPin(pin.entry);
-    if (h === state[who].pin) return loginUser(who);
-    return shakePin("Wrong PIN, try again.");
-  }
-  if (pin.first === null) {
-    pin.first = pin.entry; pin.entry = ""; renderDots();
-    $("pinTitle").textContent = "Type it again";
-    $("pinSub").textContent = "Confirm your PIN.";
-    return;
-  }
-  if (pin.entry === pin.first) {
-    state[who].pin = await hashPin(pin.entry);
-    touch();
-    return loginUser(who);
-  }
-  pin.first = null; pin.entry = ""; renderDots();
-  $("pinTitle").textContent = "Create your PIN";
-  $("pinSub").textContent = "Those didn't match. Try again.";
-}
-function buildKeypad(){
-  const kp = $("keypad");
-  ["1","2","3","4","5","6","7","8","9","⌫","0","✔"].forEach(k => {
-    const b = el("button", "keybtn", k); b.onclick = () => pressKey(k); kp.appendChild(b);
-  });
-}
-document.addEventListener("keydown", e => {
-  if ($("pinScreen").style.display !== "flex") return;
-  if (/^[0-9]$/.test(e.key)) pressKey(e.key);
-  else if (e.key === "Backspace") pressKey("⌫");
-  else if (e.key === "Enter") pressKey("✔");
-});
-
-/* ===== LOGIN / SWITCH ===== */
-function applyTheme(who){
-  const t = who === "parent" ? (THEMES[state.parent.theme] || THEMES.red) : THEMES.red;
-  document.documentElement.style.setProperty("--a", t.a);
-  document.documentElement.style.setProperty("--b", t.b);
-}
-function loginUser(who){
-  currentUser = who; pin.entry = "";
-  $("pinScreen").style.display = "none";
-  $("whoScreen").style.display = "none";
-  $("app").style.display = "block";
-  $("kidApp").style.display = who === "kid" ? "block" : "none";
-  $("parentApp").style.display = who === "parent" ? "block" : "none";
-  applyTheme(who);
-  if (who === "parent") {
-    $("cTitle").value = state.parent.title;
-    $("cTheme").value = state.parent.theme;
-  }
-  renderAll();
-  clearInterval(pollTimer);
-  pollTimer = setInterval(pullRemote, 15000);
-  pullRemote();
-  toast("Welcome! 👋");
-}
-function switchUser(){
-  currentUser = null;
-  clearInterval(pollTimer);
-  $("app").style.display = "none";
-  $("pinScreen").style.display = "none";
-  $("whoScreen").style.display = "flex";
-  applyTheme(null);
-  renderWho();
-}
-$("whoKid").addEventListener("click", () => openPin("kid"));
-$("whoParent").addEventListener("click", () => openPin("parent"));
-$("pinBack").addEventListener("click", () => { $("pinScreen").style.display = "none"; $("whoScreen").style.display = "flex"; });
-$("switchUser").addEventListener("click", switchUser);
-buildKeypad();
-
-/* ===== TABS ===== */
-function setupTabs(appEl){
-  const btns = appEl.querySelectorAll("nav.tabs button");
-  btns.forEach(b => b.addEventListener("click", () => {
-    btns.forEach(x => x.classList.toggle("active", x === b));
-    appEl.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.dataset.tab === b.dataset.tab));
-  }));
-}
-setupTabs($("kidApp")); setupTabs($("parentApp"));
-
-/* ===== SETTINGS ===== */
-$("openSettings").addEventListener("click", () => {
-  $("sName").value = state[currentUser].name;
-  $("sCurPin").value = ""; $("sNewPin").value = ""; $("sRepPin").value = "";
-  $("settingsModal").classList.add("open");
-});
-$("closeSettings").addEventListener("click", () => $("settingsModal").classList.remove("open"));
-$("saveSettings").addEventListener("click", async () => {
-  const obj = state[currentUser];
-  const name = $("sName").value.trim();
-  if (!name) return toast("Type a name first");
-  const cur = $("sCurPin").value, nw = $("sNewPin").value, rep = $("sRepPin").value;
-  if (nw || rep) {
-    if (obj.pin) {
-      if (!cur) return toast("Enter your current PIN");
-      if ((await hashPin(cur)) !== obj.pin) return toast("Current PIN is wrong");
-    }
-    if (!/^\d{4,6}$/.test(nw)) return toast("New PIN must be 4 to 6 numbers");
-    if (nw !== rep) return toast("New PINs don't match");
-    obj.pin = await hashPin(nw);
-  }
-  obj.name = name;
-  touch(); renderAll(); renderWho();
-  $("settingsModal").classList.remove("open");
-  toast("Saved! 🎉");
-});
-
-/* ===== RENDERING ===== */
-function renderAll(){
-  if (!currentUser) return;
-  if (currentUser === "kid") renderKid(); else renderParent();
-}
-function renderNotes(container, viewer){
-  container.innerHTML = "";
-  const mine = state.notes.filter(n => n.to === viewer);
-  if (!mine.length) { container.appendChild(el("p","small","No notifications yet.")); return; }
-  const unread = mine.filter(n => !n.read).length;
-  container.appendChild(el("div","notice", unread ? "🔔 " + unread + " new" : "✅ All caught up"));
-  mine.slice(0,6).forEach(n => {
-    const d = el("div","notice", n.text);
-    if (!n.read) d.style.borderLeftColor = "#ffd400";
-    container.appendChild(d);
-  });
-  container.appendChild(btn("Mark all read", "blue", () => {
-    state.notes.forEach(n => { if (n.to === viewer) n.read = true; });
-    touch(); renderAll();
-  }));
-}
-function statusText(s){ return s === "confirmed" ? "✅ Confirmed" : s === "declined" ? "❌ Not this time" : "⏳ Waiting for reply"; }
-function renderBookings(container, viewer){
-  container.innerHTML = "";
-  const list = state.bookings.slice().sort((a,b) => (a.date+a.time) < (b.date+b.time) ? -1 : 1);
-  if (!list.length) { container.appendChild(el("p","small","No bookings yet.")); return; }
-  list.forEach(b => {
-    const card = el("div","bk");
-    card.appendChild(el("div","big", b.title));
-    card.appendChild(el("div","small", fmtDate(b.date) + " at " + b.time + (b.notes ? " · " + b.notes : "")));
-    card.appendChild(el("div","small", (b.by === "parent" ? "Booked by " + state.parent.name : "Requested by Fawad") + " · " + statusText(b.status)));
-    const row = el("div","row");
-    if (b.status === "pending" && b.by !== viewer) {
-      row.appendChild(btn("✅ Confirm", "", () => respond(b.id, "confirmed")));
-      row.appendChild(btn("❌ Not this time", "red", () => respond(b.id, "declined")));
-    }
-    if (viewer === "parent") {
-      row.appendChild(btn("📆 Add to my calendar", "blue", () => openCalendar(b)));
-      row.appendChild(btn("🗑 Remove", "red", () => removeBooking(b.id)));
-    }
-    card.appendChild(row);
-    container.appendChild(card);
-  });
-}
-function renderKid(){
-  renderNotes($("kidNotes"), "kid");
-  renderBookings($("kidBookings"), "kid");
-  $("kPoints").textContent = state.kid.points;
-  renderBadges($("kBadges"), state.kid.points);
-}
-function renderBadges(container, points){
-  container.innerHTML = "";
-  BADGES.forEach(b => container.appendChild(el("span", "badge" + (points >= b.at ? "" : " locked"), b.label + " (" + b.at + ")")));
-}
-function renderParent(){
-  $("greet").textContent = state.parent.title;
-  $("pPoints").textContent = state.kid.points;
-  renderBadges($("pBadges"), state.kid.points);
-  $("pStats").textContent = "Games played: " + state.kid.games + " · Best quiz score: " + state.kid.quizBest + " out of 8";
-  const act = $("pActivity"); act.innerHTML = "";
-  if (!state.activity.length) act.appendChild(el("p","small","Nothing yet. Activity will show here."));
-  state.activity.slice(0,10).forEach(a => {
-    const t = new Date(a.at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
-    act.appendChild(el("div","notice", a.text + " · " + t));
-  });
-  renderNotes($("parNotes"), "parent");
-  renderBookings($("parBookings"), "parent");
-  if (currentUser === "parent") $("greet").textContent = state.parent.title;
-}
-function renderGreeting(){
-  $("greet").textContent = currentUser === "kid" ? "Hey " + state.kid.name + "! 🕷️" : state.parent.title;
-}
-
-/* ===== BOOKINGS ===== */
-function createBooking(by, title, date, time, notes){
-  if (!title || !date || !time) return toast("Add a title, date and time");
-  const id = "b" + Date.now();
-  state.bookings.push({ id, title, date, time, notes:notes||"", by, status:"pending", at:Date.now() });
-  const to = by === "parent" ? "kid" : "parent";
-  addNote(to, by === "parent"
-    ? "📅 " + state.parent.name + " wants to book: " + title + " on " + fmtDate(date) + " at " + time + ". Tap Confirm in My Bookings."
-    : "📩 Fawad asked to book: " + title + " on " + fmtDate(date) + " at " + time + ".");
-  addActivity((by === "parent" ? state.parent.name : "Fawad") + " sent a booking: " + title);
-  touch(); renderAll();
-  toast("Sent! 📨");
-}
-function respond(id, status){
-  const b = state.bookings.find(x => x.id === id); if (!b) return;
-  b.status = status;
-  const who = currentUser === "kid" ? "Fawad" : state.parent.name;
-  const verb = status === "confirmed" ? "confirmed" : "can't make";
-  addNote(b.by, who + " " + verb + ": " + b.title);
-  addActivity(who + " " + verb + " " + b.title);
-  touch(); renderAll();
-}
-function removeBooking(id){
-  state.bookings = state.bookings.filter(x => x.id !== id);
-  touch(); renderAll();
-}
-$("pBook").addEventListener("click", () => {
-  createBooking("parent", $("pTitle").value.trim(), $("pDate").value, $("pTime").value, $("pNotes").value.trim());
-  $("pTitle").value = ""; $("pDate").value = ""; $("pTime").value = ""; $("pNotes").value = "";
-});
-$("kRequest").addEventListener("click", () => {
-  createBooking("kid", $("kTitle").value.trim(), $("kDate").value, $("kTime").value, "");
-  $("kTitle").value = ""; $("kDate").value = ""; $("kTime").value = "";
-});
-
-/* Add to the parent's own Google Calendar (opens Google Calendar with the event filled in) */
-function openCalendar(b){
-  const start = new Date(b.date + "T" + b.time + ":00");
-  const end = new Date(start.getTime() + 60*60000);
-  const f = d => d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + "T" + pad(d.getHours()) + pad(d.getMinutes()) + "00";
-  const url = "https://calendar.google.com/calendar/render?action=TEMPLATE"
-    + "&text=" + encodeURIComponent(b.title)
-    + "&dates=" + f(start) + "/" + f(end)
-    + "&details=" + encodeURIComponent("Booked with Fawad. " + (b.notes || ""));
-  window.open(url, "_blank", "noopener");
-}
-
-/* ===== PARENT CUSTOMISE ===== */
-$("cSave").addEventListener("click", () => {
-  const title = $("cTitle").value.trim();
-  if (!title) return toast("Type a dashboard title");
-  state.parent.title = title;
-  state.parent.theme = $("cTheme").value;
-  applyTheme("parent");
-  touch(); renderAll();
-  toast("Saved! 🎨");
-});
-
-/* ===== KID: POINTS ===== */
-function addPoints(n, reason){
-  if (!n) return;
-  state.kid.points += n;
-  addActivity("Fawad earned " + n + " points" + (reason ? " (" + reason + ")" : ""));
-  touch();
-  if (currentUser === "kid") renderKid();
-  toast("+" + n + " points! ⭐");
-}
-
-/* ===== KILL SWITCH ===== */
+/* ---------- kill switch (plays sound, then closes) ---------- */
 let killing = false;
 function kill(){
-  if (killing) return; killing = true;
+  if (killing) return;
+  killing = true;
   let done = false;
   const go = () => { if (done) return; done = true; window.close(); window.location.replace("about:blank"); };
   const s = $("killSnd");
@@ -820,25 +413,53 @@ function kill(){
 $("kill").addEventListener("click", kill);
 document.addEventListener("keydown", e => { if (e.key === "Escape") kill(); });
 
-/* ===== LOADER ===== */
-function hideLoader(){ const l=$("loader"); if (l) l.classList.add("hide"); }
-window.addEventListener("load", () => setTimeout(hideLoader, 900));
-setTimeout(hideLoader, 4000);
+/* ---------- settings ---------- */
+$("openSettings").addEventListener("click", () => { $("nameInput").value = getName(); $("settingsModal").classList.add("open"); });
+$("closeSettings").addEventListener("click", () => $("settingsModal").classList.remove("open"));
+$("saveName").addEventListener("click", () => {
+  const n = $("nameInput").value.trim();
+  if (!n) { toast("Type a name first"); return; }
+  setName(n); $("settingsModal").classList.remove("open"); toast("Saved! 🎉");
+});
+$("resetName").addEventListener("click", () => { $("nameInput").value = DEFAULT_NAME; });
 
-/* ===== KID: HOME TIME + HOLIDAYS ===== */
+/* ---------- school calendar: William Hulme's Grammar School 2026-27 ---------- */
+const TERMS = [
+  { start:"2026-09-03", end:"2026-12-18" },
+  { start:"2027-01-05", end:"2027-03-25" },
+  { start:"2027-04-13", end:"2027-07-16" }
+];
+const CLOSED_RANGES = [
+  ["2026-10-26","2026-10-30","Half term"],
+  ["2026-12-03","2026-12-03","Assessment Day"],
+  ["2026-12-04","2026-12-04","Staff Planning Day"],
+  ["2027-02-15","2027-02-19","Half term"],
+  ["2027-05-03","2027-05-03","Bank Holiday"],
+  ["2027-05-31","2027-06-04","Half term"]
+];
+const KEY_DATES = [
+  { name:"Autumn half term", date:"2026-10-26", end:"2026-10-30", back:"2026-11-02" },
+  { name:"Christmas holidays", date:"2026-12-18", end:"2027-01-04", back:"2027-01-05" },
+  { name:"Spring half term", date:"2027-02-15", end:"2027-02-19", back:"2027-02-22" },
+  { name:"Easter holidays", date:"2027-03-25", end:"2027-04-12", back:"2027-04-13" },
+  { name:"Summer half term", date:"2027-05-31", end:"2027-06-04", back:"2027-06-07" },
+  { name:"Summer holidays", date:"2027-07-16", end:"2027-09-01", back:"2027-09-02" }
+];
+function closedReason(s){ for (const [a,b,l] of CLOSED_RANGES) if (s>=a && s<=b) return l; return null; }
 function isSchoolDay(d){
   if (d.getDay()===0 || d.getDay()===6) return false;
   const s = ymd(d);
-  const inTerm = SCHOOL.terms.some(t => s >= t.start && s <= t.end);
-  return inTerm && !closedReason(s);
+  return TERMS.some(t => s>=t.start && s<=t.end) && !closedReason(s);
 }
-function closedReason(s){ for (const [a,b,l] of SCHOOL.closed) if (s>=a && s<=b) return l; return null; }
-function finishTime(d){ return SCHOOL.terms.some(t => ymd(d) === t.end) ? {h:14,m:0} : {h:15,m:10}; }
+function finishTime(d){ return TERMS.some(t => ymd(d)===t.end) ? {h:14,m:0} : {h:15,m:10}; }
 function nextSchoolDay(from){
   const d = new Date(from); d.setHours(0,0,0,0);
   for (let i=1;i<400;i++){ d.setDate(d.getDate()+1); if (isSchoolDay(d)) return new Date(d); }
   return null;
 }
+function daysTill(s){ const d=parse(s), n=new Date(); n.setHours(0,0,0,0); return Math.ceil((d-n)/86400000); }
+
+/* ---------- home time ---------- */
 function updateHomeCount(){
   const now = new Date();
   if (!isSchoolDay(now)) {
@@ -851,18 +472,20 @@ function updateHomeCount(){
   const f = finishTime(now);
   const finish = new Date(now); finish.setHours(f.h, f.m, 0, 0);
   if (now >= finish) { $("homeCount").textContent = "Home time! 🏠🎉 Go get your bag!"; return; }
-  const diff = Math.floor((finish - now)/60000), h = Math.floor(diff/60), m = diff % 60;
+  const diff = Math.floor((finish - now) / 60000), h = Math.floor(diff/60), m = diff % 60;
   const funny = diff < 15 ? "almost there! 🤞" : diff < 60 ? "the bell is coming! 🔔" : "hang in there 😴";
   $("homeCount").textContent = (h ? h + "h " : "") + m + "m till home time, " + funny;
 }
 updateHomeCount(); setInterval(updateHomeCount, 15000);
 
+/* ---------- next holiday + coming up + all terms ---------- */
 (function(){
-  const upcoming = SCHOOL.dates.filter(k => daysTill(k.end) >= 0);
+  const upcoming = KEY_DATES.filter(k => daysTill(k.end) >= 0);
   const next = upcoming[0];
   if (next) {
     const d = daysTill(next.date);
-    $("nextHoliday").textContent = d <= 0 ? next.name + " is on now! 🎉" : "Next: " + next.name + " in " + (d>=14 ? Math.floor(d/7)+" weeks" : d+" day"+(d!==1?"s":"")) + "!";
+    $("nextHoliday").textContent = d <= 0 ? next.name + " is on now! 🎉" : next.name + " in " + (d>=14 ? Math.floor(d/7)+" weeks" : d+" day"+(d!==1?"s":"")) + "!";
+    $("nextHolidaySub").textContent = "Starts " + parse(next.date).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"}) + ".";
   } else {
     $("nextHoliday").textContent = "No more holidays this year.";
   }
@@ -870,11 +493,24 @@ updateHomeCount(); setInterval(updateHomeCount, 15000);
     const d = daysTill(k.date);
     return '<div class="termrow"><span>'+k.name+'</span><span>'+(d<=0?"now":d+" days")+'</span></div>';
   }).join("");
-  $("allTerms").innerHTML = SCHOOL.dates.map(k => '<div class="termrow"><span>'+k.name+'</span><span>'+parse(k.date).toLocaleDateString("en-GB",{day:"numeric",month:"short"})+'</span></div>').join("")
-    + '<p class="small">Last day of term finishes at 2:00 pm.</p>';
+  $("allTerms").innerHTML = KEY_DATES.map(k => {
+    return '<div class="termrow"><span>'+k.name+'</span><span>'+parse(k.date).toLocaleDateString("en-GB",{day:"numeric",month:"short"})+'</span></div>';
+  }).join("") + '<p class="small">Last day of term finishes at 2:00 pm. Staff INSET and planning days are also closed.</p>';
 })();
 
-/* ===== KID: FUN ===== */
+/* ---------- notifications ---------- */
+(function(){
+  const now=new Date(), list=[];
+  const xmas=daysTill("2026-12-25");
+  if (xmas>0) list.push("🎄 " + xmas + " days till Christmas!");
+  const r=closedReason(ymd(now));
+  if (r) list.push("🎉 School closed today: " + r + ".");
+  list.push("😂 Tap Fun for jokes, memes and facts!");
+  list.push("🕒 Home time is 3:10 pm on normal days.");
+  $("notices").innerHTML = list.map(t => '<div class="notice">'+t+'</div>').join("");
+})();
+
+/* ---------- fact of the day ---------- */
 const FACTS = [
   "A cheetah can go from 0 to 60 mph (about 97 km/h) in around 3 seconds. 🐆",
   "Octopuses have three hearts and blue blood. 🐙",
@@ -888,10 +524,12 @@ const FACTS = [
   "The Eiffel Tower can grow about 15 cm taller in summer because the metal expands in the heat. 🗼",
   "A day on Venus is longer than a year on Venus. 🪐",
   "Butterflies taste with their feet. 🦋",
+  "Giraffes often sleep in short naps, adding up to only about 30 minutes to 2 hours a day. 🦒",
   "The Pacific Ocean is the biggest ocean on Earth. 🌊"
 ];
 $("factText").textContent = FACTS[dayIndex() % FACTS.length];
 
+/* ---------- jokes ---------- */
 const JOKES = [
   "Why did the car get a ticket? It was parked in the wrong lane. Honest mistake, officer!",
   "What do you call a car that tells bad jokes? A joke-mobile! 🚗💨",
@@ -919,7 +557,7 @@ const XMAS_JOKES = [
   "What do reindeer say before a joke? Hoof you ready for this? 🦌",
   "Why was Santa's little helper so good at maths? He had elf-confidence! 🎅"
 ];
-function setJoke(t){ const el2=$("jokeText"); el2.textContent = t; }
+function setJoke(t){ const el=$("jokeText"); el.style.animation="none"; void el.offsetWidth; el.style.animation=""; el.textContent=t; }
 $("jokeBtn").addEventListener("click", () => {
   const m = new Date().getMonth();
   const pool = (m===10||m===11) ? JOKES.concat(XMAS_JOKES) : JOKES;
@@ -927,6 +565,7 @@ $("jokeBtn").addEventListener("click", () => {
 });
 $("todayJoke").addEventListener("click", () => setJoke(JOKES[dayIndex() % JOKES.length]));
 
+/* ---------- meme scroller ---------- */
 const MEMES = [
   { emo:"🚗💨", top:"Me: I'll go to bed early.", bottom:"Also me at 11pm: 'just one more race'" },
   { emo:"📚🧠", top:"Homework: 5 minutes.", bottom:"Also homework: 'Surprise, it's 45 minutes'" },
@@ -941,24 +580,27 @@ const MEMES = [
 ];
 let memeIndex = dayIndex() % MEMES.length;
 function renderMeme(){
-  const m = MEMES[memeIndex], box = $("memeBox");
-  box.innerHTML = '<div class="emo">'+m.emo+'</div><div class="top"></div><div class="bottom"></div>';
-  box.querySelector(".top").textContent = m.top;
-  box.querySelector(".bottom").textContent = m.bottom;
+  const m = MEMES[memeIndex];
+  $("memeBox").innerHTML = '<div class="emo">'+m.emo+'</div><div class="top"></div><div class="bottom"></div>';
+  $("memeBox").querySelector(".top").textContent = m.top;
+  $("memeBox").querySelector(".bottom").textContent = m.bottom;
   $("memeDots").textContent = (memeIndex+1) + " / " + MEMES.length;
 }
 $("memePrev").addEventListener("click", () => { memeIndex = (memeIndex - 1 + MEMES.length) % MEMES.length; renderMeme(); });
 $("memeNext").addEventListener("click", () => { memeIndex = (memeIndex + 1) % MEMES.length; renderMeme(); });
 renderMeme();
 
+/* ---------- Let Me Know: play / pause / stop ---------- */
 const snd = $("snd");
 function soundStatus(t){ $("soundStatus").textContent = t; }
-$("soundPlay").addEventListener("click", () => snd.play().then(() => soundStatus("Playing 🔊")).catch(() => soundStatus("Couldn't play. Check the volume.")));
+$("soundPlay").addEventListener("click", () => {
+  snd.play().then(() => soundStatus("Playing 🔊")).catch(() => soundStatus("Couldn't play. Check the volume."));
+});
 $("soundPause").addEventListener("click", () => { snd.pause(); soundStatus("Paused ⏸"); });
 $("soundStop").addEventListener("click", () => { snd.pause(); snd.currentTime = 0; soundStatus("Stopped ⏹"); });
 snd.addEventListener("ended", () => soundStatus("Finished ✅"));
 
-/* Doodle pad */
+/* ---------- Doodle Pad ---------- */
 const DOODLE_COLOURS = ["#000000","#e62429","#1e4fd8","#22c55e","#ffd400","#ff7ac8"];
 let doodleColour = DOODLE_COLOURS[0];
 const dc = $("doodle"), dctx = dc.getContext("2d");
@@ -966,20 +608,28 @@ dctx.lineCap = "round"; dctx.lineJoin = "round"; dctx.lineWidth = 6;
 (function buildPalette(){
   const pal = $("palette");
   DOODLE_COLOURS.forEach((c,i) => {
-    const b = el("button", "swatch" + (i===0?" on":""));
+    const b = document.createElement("button");
+    b.className = "swatch" + (i===0?" on":"");
     b.style.background = c;
-    b.onclick = () => { doodleColour = c; pal.querySelectorAll(".swatch").forEach(x => x.classList.toggle("on", x===b)); };
+    b.setAttribute("aria-label", "Colour " + (i+1));
+    b.onclick = () => {
+      doodleColour = c;
+      pal.querySelectorAll(".swatch").forEach(x => x.classList.toggle("on", x===b));
+    };
     pal.appendChild(b);
   });
 })();
 let drawing = false, lastX = 0, lastY = 0;
-function doodlePos(e){ const r = dc.getBoundingClientRect(); return { x:(e.clientX-r.left)*(dc.width/r.width), y:(e.clientY-r.top)*(dc.height/r.height) }; }
+function doodlePos(e){
+  const r = dc.getBoundingClientRect();
+  return { x: (e.clientX - r.left) * (dc.width / r.width), y: (e.clientY - r.top) * (dc.height / r.height) };
+}
 dc.addEventListener("pointerdown", e => { drawing = true; const p = doodlePos(e); lastX = p.x; lastY = p.y; dc.setPointerCapture(e.pointerId); });
 dc.addEventListener("pointermove", e => {
   if (!drawing) return;
   const p = doodlePos(e);
   dctx.strokeStyle = doodleColour;
-  dctx.beginPath(); dctx.moveTo(lastX,lastY); dctx.lineTo(p.x,p.y); dctx.stroke();
+  dctx.beginPath(); dctx.moveTo(lastX, lastY); dctx.lineTo(p.x, p.y); dctx.stroke();
   lastX = p.x; lastY = p.y;
 });
 ["pointerup","pointercancel","pointerleave"].forEach(ev => dc.addEventListener(ev, () => drawing = false));
@@ -987,22 +637,22 @@ $("clearDoodle").addEventListener("click", () => dctx.clearRect(0,0,dc.width,dc.
 $("openDoodle").addEventListener("click", () => $("doodleModal").classList.add("open"));
 $("closeDoodle").addEventListener("click", () => $("doodleModal").classList.remove("open"));
 
-/* ===== GAMES ===== */
+/* ---------- game pop-up ---------- */
 let stopGame = () => {};
 const GAME_TITLES = { dodge:"🚗 Car Dodge", memory:"🧠 Car Memory", whack:"🏎️ Whack-a-Car", quiz:"❓ Brain Quiz" };
 const GAME_IDS = ["dodge","memory","whack","quiz"];
 function openGame(name){
   stopGame();
-  GAME_IDS.forEach(g => $("g-"+g).style.display = (g===name ? "block" : "none"));
+  GAME_IDS.forEach(g => $("g-"+g).style.display = (g===name?"block":"none"));
   $("gameTitle").textContent = GAME_TITLES[name];
   $("gameModal").classList.add("open");
-  state.kid.games += 1; touch();
   stopGame = { dodge:initDodge, memory:initMemory, whack:initWhack, quiz:initQuiz }[name]();
 }
-function closeGame(){ stopGame(); stopGame = () => {}; $("gameModal").classList.remove("open"); }
+function closeGame(){ stopGame(); stopGame=()=>{}; $("gameModal").classList.remove("open"); }
 document.querySelectorAll("[data-game]").forEach(b => b.addEventListener("click", () => openGame(b.dataset.game)));
 $("closeGame").addEventListener("click", closeGame);
 
+/* ---------- Car Dodge ---------- */
 function initDodge(){
   const c=$("dodge"), ctx=c.getContext("2d"), W=c.width, H=c.height, CW=34, CH=50;
   let px, cars, score, running, frame, speed, raf; const keys={};
@@ -1014,86 +664,87 @@ function initDodge(){
     if(frame%45===0) cars.push({x:Math.random()*(W-CW), y:-CH, color:["#22c55e","#1e4fd8","#ffd400","#ff9b9d"][Math.floor(Math.random()*4)]});
     if(frame%600===0) speed+=0.5;
     ctx.clearRect(0,0,W,H); ctx.fillStyle="#333"; ctx.fillRect(W/2-2,0,4,H);
-    cars.forEach(car => { car.y += speed; drawCar(car.x, car.y, car.color); });
-    cars = cars.filter(car => car.y < H+CH);
-    for (const car of cars) {
-      if (car.x<px+CW && car.x+CW>px && car.y<H-70+CH && car.y+CH>H-70) {
-        running = false;
-        $("gameCard").classList.add("shake"); setTimeout(() => $("gameCard").classList.remove("shake"), 400);
+    cars.forEach(car=>{ car.y+=speed; drawCar(car.x,car.y,car.color); });
+    cars=cars.filter(car=>car.y<H+CH);
+    for(const car of cars){
+      if(car.x<px+CW && car.x+CW>px && car.y<H-70+CH && car.y+CH>H-70){
+        running=false; $("gameCard").classList.add("shake"); setTimeout(()=>$("gameCard").classList.remove("shake"),400);
         const earned = Math.floor(score/100);
-        if (earned > 0) addPoints(earned, "Car Dodge");
-        ctx.fillStyle="rgba(0,0,0,.6)"; ctx.fillRect(0,0,W,H); ctx.fillStyle="#fff"; ctx.font="bold 20px sans-serif"; ctx.textAlign="center"; ctx.fillText("Crash! Press Start",W/2,H/2);
-        return;
+        if (earned > 0) addPoints(earned);
+        ctx.fillStyle="rgba(0,0,0,.6)"; ctx.fillRect(0,0,W,H); ctx.fillStyle="#fff"; ctx.font="bold 20px sans-serif"; ctx.textAlign="center"; ctx.fillText("Crash! Press Start",W/2,H/2); return;
       }
     }
-    drawCar(px,H-70,"#e62429"); score++; $("dodgeScore").textContent = "Score: " + Math.floor(score/10);
-    raf = requestAnimationFrame(loop);
+    drawCar(px,H-70,"#e62429"); score++; $("dodgeScore").textContent="Score: "+Math.floor(score/10);
+    raf=requestAnimationFrame(loop);
   }
-  const kd = e => { if(e.key==="ArrowLeft") keys.left=true; if(e.key==="ArrowRight") keys.right=true; };
-  const ku = e => { if(e.key==="ArrowLeft") keys.left=false; if(e.key==="ArrowRight") keys.right=false; };
-  document.addEventListener("keydown", kd); document.addEventListener("keyup", ku);
-  const hold = (id,k) => { const b=$(id); b.onpointerdown=()=>keys[k]=true; b.onpointerup=()=>keys[k]=false; b.onpointerleave=()=>keys[k]=false; b.onpointercancel=()=>keys[k]=false; };
+  const kd=e=>{ if(e.key==="ArrowLeft")keys.left=true; if(e.key==="ArrowRight")keys.right=true; };
+  const ku=e=>{ if(e.key==="ArrowLeft")keys.left=false; if(e.key==="ArrowRight")keys.right=false; };
+  document.addEventListener("keydown",kd); document.addEventListener("keyup",ku);
+  const hold=(id,k)=>{ const b=$(id); b.onpointerdown=()=>keys[k]=true; b.onpointerup=()=>keys[k]=false; b.onpointerleave=()=>keys[k]=false; b.onpointercancel=()=>keys[k]=false; };
   hold("dl","left"); hold("dr","right");
-  $("dodgeStart").onclick = reset;
+  $("dodgeStart").onclick=reset;
   ctx.fillStyle="#fff"; ctx.font="bold 18px sans-serif"; ctx.textAlign="center"; ctx.fillText("Press Start!",W/2,H/2);
   return () => { running=false; cancelAnimationFrame(raf); document.removeEventListener("keydown",kd); document.removeEventListener("keyup",ku); };
 }
 
+/* ---------- Car Memory ---------- */
 function initMemory(){
   const EMOJI=["🚗","🚙","🚕","🏎️","🚓","🚑","🚒","🛻"]; const grid=$("memGrid");
   let first=null, lock=false, moves=0, matched=0, timeouts=[];
   function reset(){
     timeouts.forEach(clearTimeout); timeouts=[];
     grid.innerHTML=""; first=null; lock=false; moves=0; matched=0; $("memMoves").textContent="Moves: 0";
-    shuffle([...EMOJI,...EMOJI]).forEach(sym => {
-      const cell = el("div","cell","❔"); cell.dataset.sym = sym;
-      cell.onclick = () => flip(cell); grid.appendChild(cell);
+    shuffle([...EMOJI,...EMOJI]).forEach(sym=>{
+      const cell=document.createElement("div"); cell.className="cell"; cell.dataset.sym=sym; cell.textContent="❔";
+      cell.onclick=()=>flip(cell); grid.appendChild(cell);
     });
   }
   function flip(cell){
-    if (lock || cell.classList.contains("open") || cell.classList.contains("done")) return;
-    cell.classList.add("open"); cell.textContent = cell.dataset.sym;
-    if (!first) { first = cell; return; }
-    moves++; $("memMoves").textContent = "Moves: " + moves;
-    if (first.dataset.sym === cell.dataset.sym) {
+    if(lock||cell.classList.contains("open")||cell.classList.contains("done")) return;
+    cell.classList.add("open"); cell.textContent=cell.dataset.sym;
+    if(!first){ first=cell; return; }
+    moves++; $("memMoves").textContent="Moves: "+moves;
+    if(first.dataset.sym===cell.dataset.sym){
       first.classList.replace("open","done"); cell.classList.replace("open","done"); first=null; matched+=2;
-      if (matched === EMOJI.length*2) { $("memMoves").textContent = "You won in " + moves + " moves! 🎉"; addPoints(5, "Car Memory"); }
+      if(matched===EMOJI.length*2){ $("memMoves").textContent="You won in "+moves+" moves! 🎉"; addPoints(5); }
     } else {
-      lock = true; const a=first, b=cell;
-      timeouts.push(setTimeout(() => { [a,b].forEach(c => { c.classList.remove("open"); c.textContent="❔"; }); first=null; lock=false; }, 700));
+      lock=true; const a=first, b=cell;
+      timeouts.push(setTimeout(()=>{ [a,b].forEach(c=>{ c.classList.remove("open"); c.textContent="❔"; }); first=null; lock=false; },700));
     }
   }
-  $("memReset").onclick = reset; reset();
+  $("memReset").onclick=reset; reset();
   return () => timeouts.forEach(clearTimeout);
 }
 
+/* ---------- Whack-a-Car ---------- */
 function initWhack(){
   const grid=$("whackGrid"); let score=0, timeLeft=20, active=false, pop=null, timer=null, mole=null;
   grid.innerHTML="";
-  for (let i=0;i<9;i++){
-    const cell = el("div","cell"); cell.dataset.i = i;
-    cell.onclick = () => { if(!active || Number(cell.dataset.i)!==pop) return; score++; pop=null; cell.textContent="💥"; label(); setTimeout(() => { if(cell.textContent==="💥") cell.textContent=""; }, 200); };
+  for(let i=0;i<9;i++){
+    const cell=document.createElement("div"); cell.className="cell"; cell.dataset.i=i;
+    cell.onclick=()=>{ if(!active||Number(cell.dataset.i)!==pop) return; score++; pop=null; cell.textContent="💥"; label(); setTimeout(()=>{ if(cell.textContent==="💥") cell.textContent=""; },200); };
     grid.appendChild(cell);
   }
-  function label(){ $("whackScore").textContent = "Score: " + score + " · Time: " + timeLeft; }
+  function label(){ $("whackScore").textContent="Score: "+score+" · Time: "+timeLeft; }
   function showCar(){ if(!active) return; if(pop!==null) grid.children[pop].textContent=""; pop=Math.floor(Math.random()*9); grid.children[pop].textContent="🏎️"; }
-  $("whackStart").onclick = () => {
+  $("whackStart").onclick=()=>{
     clearInterval(timer); clearInterval(mole); score=0; timeLeft=20; active=true; pop=null;
-    [...grid.children].forEach(c => c.textContent=""); label(); showCar();
-    mole = setInterval(showCar, 700);
-    timer = setInterval(() => {
+    [...grid.children].forEach(c=>c.textContent=""); label(); showCar();
+    mole=setInterval(showCar,700);
+    timer=setInterval(()=>{
       timeLeft--; label();
-      if (timeLeft <= 0) {
+      if(timeLeft<=0){
         active=false; clearInterval(timer); clearInterval(mole);
-        if (pop!==null) grid.children[pop].textContent="";
-        $("whackScore").textContent = "Time's up! Score: " + score + " 🎉";
-        if (score > 0) addPoints(Math.min(score,10), "Whack-a-Car");
+        if(pop!==null) grid.children[pop].textContent="";
+        $("whackScore").textContent="Time's up! Score: "+score+" 🎉";
+        if (score>0) addPoints(Math.min(score,10));
       }
-    }, 1000);
+    },1000);
   };
   return () => { active=false; clearInterval(timer); clearInterval(mole); };
 }
 
+/* ---------- Brain Quiz ---------- */
 const QUIZ = [
   { q:"How many legs does a spider have?", a:["6","8","10","12"], correct:1 },
   { q:"Which planet is closest to the Sun?", a:["Venus","Earth","Mercury","Mars"], correct:2 },
@@ -1117,19 +768,20 @@ function initQuiz(){
     $("quizAgain").style.display = "none";
     const opts = $("quizOpts"); opts.innerHTML = "";
     qs[i].a.forEach((txt, idx) => {
-      const b = el("button","",txt);
+      const b = document.createElement("button");
+      b.textContent = txt;
       b.onclick = () => choose(idx, b);
       opts.appendChild(b);
     });
   }
-  function choose(idx, b){
+  function choose(idx, btn){
     const correct = qs[i].correct;
-    [...$("quizOpts").children].forEach(x => x.disabled = true);
+    [...$("quizOpts").children].forEach(b => b.disabled = true);
     if (idx === correct) {
-      b.classList.add("right"); score++; addPoints(2, "Brain Quiz");
+      btn.classList.add("right"); score++; addPoints(2);
       $("quizMsg").textContent = "Correct! 🎉";
     } else {
-      b.classList.add("wrong");
+      btn.classList.add("wrong");
       $("quizOpts").children[correct].classList.add("right");
       $("quizMsg").textContent = "Nice try! The answer was " + qs[i].a[correct] + ".";
     }
@@ -1141,22 +793,16 @@ function initQuiz(){
     else {
       $("quizProgress").textContent = "Quiz finished!";
       $("quizQ").textContent = "You got " + score + " out of " + qs.length + " right! 🏆";
-      $("quizOpts").innerHTML = ""; $("quizMsg").textContent = ""; $("quizNext").style.display = "none";
+      $("quizOpts").innerHTML = "";
+      $("quizMsg").textContent = "";
+      $("quizNext").style.display = "none";
       $("quizAgain").style.display = "inline-block";
-      if (score > state.kid.quizBest) { state.kid.quizBest = score; touch(); }
     }
   };
-  $("quizAgain").onclick = () => { i=0; score=0; qs = shuffle(QUIZ).slice(0,8); show(); };
+  $("quizAgain").onclick = () => { i = 0; score = 0; qs = shuffle(QUIZ).slice(0,8); show(); };
   show();
   return () => {};
 }
-
-/* ===== INITIAL LOAD ===== */
-loadLocal();
-renderWho();
-setSync("");
-pullRemote();
-setInterval(() => { if (!currentUser) renderWho(); }, 5000);
 </script>
 </body>
 </html>
