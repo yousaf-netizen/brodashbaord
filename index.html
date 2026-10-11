@@ -95,6 +95,8 @@
 
   /* ---------- sound ---------- */
   .soundbtns { display:flex; gap:8px; flex-wrap:wrap; }
+  .soundgrid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .soundgrid button { width:100%; }
 
   /* ---------- loader ---------- */
   #loader { position:fixed; inset:0; background:var(--dark); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:150; transition:opacity .4s; }
@@ -140,6 +142,7 @@
     button { padding:8px 11px; font-size:.9rem; }
     .tiles { grid-template-columns:1fr; }
     .qopts { grid-template-columns:1fr; }
+    .soundgrid { grid-template-columns:1fr; }
     .grid { max-width:100%; }
     .modalcard { padding:12px; }
   }
@@ -221,6 +224,15 @@
         <button class="blue" id="memeNext">▶</button>
       </div>
       <p class="small">New memes every day. Tap ◀ ▶ to look at the others.</p>
+    </div>
+
+    <div class="card yellowh">
+      <h2>🔈 Meme Sounds</h2>
+      <div class="soundgrid" id="memeSounds"></div>
+      <div class="row">
+        <button class="red" id="memeSoundStop">⏹ Stop</button>
+      </div>
+      <p class="small" id="memeSoundStatus">Tap a sound to play it.</p>
     </div>
 
     <div class="card red">
@@ -589,6 +601,45 @@ function renderMeme(){
 $("memePrev").addEventListener("click", () => { memeIndex = (memeIndex - 1 + MEMES.length) % MEMES.length; renderMeme(); });
 $("memeNext").addEventListener("click", () => { memeIndex = (memeIndex + 1) % MEMES.length; renderMeme(); });
 renderMeme();
+
+/* ---------- meme sounds (files uploaded to the GitHub repository) ---------- */
+const MEME_SOUNDS = [
+  { label:"Roblox Oof", file:"Roblox Death Sound (Oof) - Sound Effect (HD) - Gaming Sound FX.mp3" },
+  { label:"Hello", file:"SOUND EFFECT HELLO.mp3" },
+  { label:"Darkness My Old Friend", file:"DARKNESS MY OLD FRIEND ORIGINAL - Nathan.mp3" },
+  { label:"67 Meme", file:"67-meme.mp3" }
+];
+const memeAudio = new Audio();
+memeAudio.preload = "none";
+let memeSoundNow = "";
+function setMemeStatus(t){ $("memeSoundStatus").textContent = t; }
+function buildMemeSounds(){
+  const box = $("memeSounds");
+  box.innerHTML = "";
+  MEME_SOUNDS.forEach(s => {
+    const b = document.createElement("button");
+    b.className = "blue";
+    b.textContent = "▶ " + s.label;
+    b.onclick = () => playMemeSound(s);
+    box.appendChild(b);
+  });
+}
+function playMemeSound(s){
+  memeAudio.pause();
+  memeAudio.src = encodeURI(s.file);
+  memeSoundNow = s.label;
+  memeAudio.play()
+    .then(() => setMemeStatus("Playing: " + s.label + " 🔊"))
+    .catch(() => setMemeStatus("Couldn't play " + s.label + ". Check the file name on GitHub."));
+}
+memeAudio.addEventListener("error", () => {
+  if (memeSoundNow) setMemeStatus("Couldn't find " + memeSoundNow + ". Check the file name on GitHub.");
+});
+memeAudio.addEventListener("ended", () => { if (memeSoundNow) setMemeStatus("Finished: " + memeSoundNow + " ✅"); });
+$("memeSoundStop").addEventListener("click", () => {
+  memeAudio.pause(); memeAudio.currentTime = 0; setMemeStatus("Stopped ⏹");
+});
+buildMemeSounds();
 
 /* ---------- Let Me Know: play / pause / stop ---------- */
 const snd = $("snd");
