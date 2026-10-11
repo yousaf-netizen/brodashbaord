@@ -595,13 +595,14 @@ renderMeme();
 const SOUNDS = [
   { label:"Let Me Know", file:"let-me-know.mp3" },
   { label:"Roblox Oof", file:"Roblox Death Sound (Oof) - Sound Effect (HD) - Gaming Sound FX.mp3" },
-  { label:"Hello", file:"SOUND EFFECT HELLO.mp3" },
+  { label:"Hello", file:"SOUND EFFECT HELLO" },
   { label:"Darkness My Old Friend", file:"DARKNESS MY OLD FRIEND ORIGINAL - Nathan.mp3" },
   { label:"67 Meme", file:"67-meme.webm" }
 ];
 const soundAudio = new Audio();
 soundAudio.preload = "none";
 let soundNow = "";
+const BACKEND_ERROR = "Unable to check the back end";
 function setSoundStatus(t){ $("soundStatus").textContent = t; }
 function buildSoundList(){
   const box = $("soundList");
@@ -620,10 +621,10 @@ function playSound(s){
   soundNow = s.label;
   soundAudio.play()
     .then(() => setSoundStatus("Playing: " + s.label + " 🔊"))
-    .catch(() => setSoundStatus("Couldn't play " + s.label + ". Check the file name on GitHub."));
+    .catch(() => setSoundStatus(BACKEND_ERROR));
 }
 soundAudio.addEventListener("error", () => {
-  if (soundNow) setSoundStatus("Couldn't find " + soundNow + ". Check the file name on GitHub.");
+  if (soundNow) setSoundStatus(BACKEND_ERROR);
 });
 soundAudio.addEventListener("ended", () => { if (soundNow) setSoundStatus("Finished: " + soundNow + " ✅"); });
 $("soundPause").addEventListener("click", () => { soundAudio.pause(); setSoundStatus("Paused ⏸"); });
