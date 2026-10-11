@@ -96,6 +96,9 @@
   /* ---------- sounds ---------- */
   .soundgrid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
   .soundgrid button { width:100%; }
+  .progress { height:16px; background:rgba(255,255,255,.2); border:2px solid var(--white); border-radius:10px; overflow:hidden; margin-top:10px; }
+  #soundBar { height:100%; width:0%; background:linear-gradient(90deg, var(--yellow), var(--green)); transition:width .25s linear; }
+  #soundLeft { font-weight:bold; color:#ffe680; }
 
   /* ---------- loader ---------- */
   #loader { position:fixed; inset:0; background:var(--dark); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:150; transition:opacity .4s; }
@@ -228,6 +231,10 @@
     <div class="card red">
       <h2>🔈 Sounds &amp; Memes</h2>
       <div class="soundgrid" id="soundList"></div>
+      <div class="progress"><div id="soundBar"></div></div>
+      <div class="row">
+        <span class="small" id="soundLeft"></span>
+      </div>
       <div class="row">
         <button class="blue" id="soundPause">⏸ Pause</button>
         <button class="red" id="soundStop">⏹ Stop</button>
@@ -595,8 +602,6 @@ renderMeme();
 const SOUNDS = [
   { label:"Let Me Know", file:"let-me-know.mp3" },
   { label:"Roblox Oof", file:"Roblox Death Sound (Oof) - Sound Effect (HD) - Gaming Sound FX.mp3" },
-  { label:"Hello", file:"SOUND EFFECT HELLO" },
-  { label:"Darkness My Old Friend", file:"DARKNESS MY OLD FRIEND ORIGINAL - Nathan.mp3" },
   { label:"67 Meme", file:"67-meme.webm" }
 ];
 const soundAudio = new Audio();
@@ -604,6 +609,19 @@ soundAudio.preload = "none";
 let soundNow = "";
 const BACKEND_ERROR = "Unable to check the back end";
 function setSoundStatus(t){ $("soundStatus").textContent = t; }
+function fmtTime(s){
+  if (!isFinite(s) || s < 0) s = 0;
+  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return m + ":" + String(sec).padStart(2, "0");
+}
+function resetBar(){ $("soundBar").style.width = "0%"; $("soundLeft").textContent = ""; }
+function updateBar(){
+  const d = soundAudio.duration;
+  if (!isFinite(d) || d <= 0) { resetBar(); return; }
+  const pct = Math.min(100, soundAudio.currentTime / d * 100);
+  $("soundBar").style.width = pct + "%";
+  $("soundLeft").textContent = fmtTime(d - soundAudio.currentTime) + " left";
+}
 function buildSoundList(){
   const box = $("soundList");
   box.innerHTML = "";
@@ -619,16 +637,25 @@ function playSound(s){
   soundAudio.pause();
   soundAudio.src = encodeURI(s.file);
   soundNow = s.label;
+  resetBar();
   soundAudio.play()
     .then(() => setSoundStatus("Playing: " + s.label + " 🔊"))
-    .catch(() => setSoundStatus(BACKEND_ERROR));
+    .catch(() => { setSoundStatus(BACKEND_ERROR); resetBar(); });
 }
+soundAudio.addEventListener("timeupdate", updateBar);
+soundAudio.addEventListener("loadedmetadata", updateBar);
 soundAudio.addEventListener("error", () => {
-  if (soundNow) setSoundStatus(BACKEND_ERROR);
+  if (soundNow) { setSoundStatus(BACKEND_ERROR); resetBar(); }
 });
-soundAudio.addEventListener("ended", () => { if (soundNow) setSoundStatus("Finished: " + soundNow + " ✅"); });
+soundAudio.addEventListener("ended", () => {
+  if (soundNow) {
+    setSoundStatus("Finished: " + soundNow + " ✅");
+    $("soundBar").style.width = "100%";
+    $("soundLeft").textContent = "Finished";
+  }
+});
 $("soundPause").addEventListener("click", () => { soundAudio.pause(); setSoundStatus("Paused ⏸"); });
-$("soundStop").addEventListener("click", () => { soundAudio.pause(); soundAudio.currentTime = 0; setSoundStatus("Stopped ⏹"); });
+$("soundStop").addEventListener("click", () => { soundAudio.pause(); soundAudio.currentTime = 0; setSoundStatus("Stopped ⏹"); resetBar(); });
 buildSoundList();
 
 /* ---------- Doodle Pad ---------- */
