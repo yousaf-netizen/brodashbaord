@@ -213,8 +213,6 @@
   <button data-tab="school">📚 School</button>
   <button data-tab="games">🎮 Games</button>
   <button data-tab="calendar">📅 Calendar</button>
-  <button data-tab="calc">🧮 Calculator</button>
-  <button data-tab="words">📝 Word Problems</button>
 </nav>
 
 <main>
@@ -314,6 +312,73 @@
       </details>
       <p class="small">William Hulme's Grammar School term dates 2026–27.</p>
     </div>
+
+        <div class="card yellowh">
+          <h2>🧮 Calculator</h2>
+          <div class="row">
+            <button class="blue" id="calcMode">🔬 Switch to Scientific</button>
+          </div>
+          <div class="calc">
+            <div class="calcdisp" id="calcDisp">0</div>
+            <div class="calcgrid sci" id="calcSci" style="display:none">
+              <button class="sci-btn fn" data-k="sin(">sin</button>
+              <button class="sci-btn fn" data-k="cos(">cos</button>
+              <button class="sci-btn fn" data-k="tan(">tan</button>
+              <button class="sci-btn fn" data-k="(">(</button>
+              <button class="sci-btn fn" data-k=")">)</button>
+              <button class="sci-btn fn" data-k="ln(">ln</button>
+              <button class="sci-btn fn" data-k="log(">log</button>
+              <button class="sci-btn fn" data-k="√(">√</button>
+              <button class="sci-btn fn" data-k="^2">x²</button>
+              <button class="sci-btn fn" data-k="^">xʸ</button>
+              <button class="sci-btn fn" data-k="π">π</button>
+              <button class="sci-btn fn" data-k="e">e</button>
+              <button class="sci-btn fn" data-k="⌫">⌫</button>
+            </div>
+            <div class="calcgrid">
+              <button class="fn" data-k="AC">AC</button>
+              <button class="fn" data-k="±">±</button>
+              <button class="fn" data-k="%">%</button>
+              <button class="op" data-k="÷">÷</button>
+              <button data-k="7">7</button>
+              <button data-k="8">8</button>
+              <button data-k="9">9</button>
+              <button class="op" data-k="×">×</button>
+              <button data-k="4">4</button>
+              <button data-k="5">5</button>
+              <button data-k="6">6</button>
+              <button class="op" data-k="−">−</button>
+              <button data-k="1">1</button>
+              <button data-k="2">2</button>
+              <button data-k="3">3</button>
+              <button class="op" data-k="+">+</button>
+              <button class="zero" data-k="0">0</button>
+              <button data-k=".">.</button>
+              <button class="op" data-k="=">=</button>
+            </div>
+          </div>
+          <p class="small">Trig uses degrees. Scientific mode can also use brackets: type 2×(3+4).</p>
+        </div>
+
+        <div class="card green">
+          <h2>📝 Word Problem Helper</h2>
+          <p class="small">Type a problem that has numbers in it. I'll show you the working.</p>
+          <textarea id="wpText" maxlength="500" placeholder="e.g. Sam had 10 sweets and ate 3. How many are left?"></textarea>
+          <div class="row">
+            <button class="green" id="wpSolve">✏️ Solve it</button>
+            <button class="blue" id="wpClear">Clear</button>
+          </div>
+          <div class="examples">
+            <button class="yellow" data-ex="Sam had 10 sweets and ate 3. How many are left?">Try: sweets</button>
+            <button class="yellow" data-ex="There are 3 bags with 4 apples in each. How many apples are there?">Try: bags</button>
+            <button class="yellow" data-ex="Share 12 biscuits equally between 3 friends. How many does each friend get?">Try: sharing</button>
+          </div>
+          <div id="wpOut" class="notice wpout" style="display:none"></div>
+          <details class="more">
+            <summary>What can this helper do?</summary>
+            <p class="small">It runs on this device with no internet and no AI, so it works for simple problems only. It handles one step with two (or more) numbers: adding, taking away, groups (times) and sharing (divide). If it guesses wrong, check the working and try again with clearer words. For harder questions, ask a grown-up or use the calculator.</p>
+          </details>
+        </div>
   </section>
 
   <!-- GAMES -->
@@ -351,78 +416,7 @@
     </div>
   </section>
 
-  <!-- CALCULATOR -->
-  <section class="panel single" id="tab-calc">
-    <div class="card yellowh">
-      <h2>🧮 Calculator</h2>
-      <div class="row">
-        <button class="blue" id="calcMode">🔬 Switch to Scientific</button>
-      </div>
-      <div class="calc">
-        <div class="calcdisp" id="calcDisp">0</div>
-        <div class="calcgrid sci" id="calcSci" style="display:none">
-          <button class="sci-btn fn" data-k="sin(">sin</button>
-          <button class="sci-btn fn" data-k="cos(">cos</button>
-          <button class="sci-btn fn" data-k="tan(">tan</button>
-          <button class="sci-btn fn" data-k="(">(</button>
-          <button class="sci-btn fn" data-k=")">)</button>
-          <button class="sci-btn fn" data-k="ln(">ln</button>
-          <button class="sci-btn fn" data-k="log(">log</button>
-          <button class="sci-btn fn" data-k="√(">√</button>
-          <button class="sci-btn fn" data-k="^2">x²</button>
-          <button class="sci-btn fn" data-k="^">xʸ</button>
-          <button class="sci-btn fn" data-k="π">π</button>
-          <button class="sci-btn fn" data-k="e">e</button>
-          <button class="sci-btn fn" data-k="⌫">⌫</button>
-        </div>
-        <div class="calcgrid">
-          <button class="fn" data-k="AC">AC</button>
-          <button class="fn" data-k="±">±</button>
-          <button class="fn" data-k="%">%</button>
-          <button class="op" data-k="÷">÷</button>
-          <button data-k="7">7</button>
-          <button data-k="8">8</button>
-          <button data-k="9">9</button>
-          <button class="op" data-k="×">×</button>
-          <button data-k="4">4</button>
-          <button data-k="5">5</button>
-          <button data-k="6">6</button>
-          <button class="op" data-k="−">−</button>
-          <button data-k="1">1</button>
-          <button data-k="2">2</button>
-          <button data-k="3">3</button>
-          <button class="op" data-k="+">+</button>
-          <button class="zero" data-k="0">0</button>
-          <button data-k=".">.</button>
-          <button class="op" data-k="=">=</button>
-        </div>
-      </div>
-      <p class="small">Trig uses degrees. Scientific mode can also use brackets: type 2×(3+4).</p>
-    </div>
-  </section>
 
-  <!-- WORD PROBLEMS -->
-  <section class="panel single" id="tab-words">
-    <div class="card green">
-      <h2>📝 Word Problem Helper</h2>
-      <p class="small">Type a problem that has numbers in it. I'll show you the working.</p>
-      <textarea id="wpText" maxlength="500" placeholder="e.g. Sam had 10 sweets and ate 3. How many are left?"></textarea>
-      <div class="row">
-        <button class="green" id="wpSolve">✏️ Solve it</button>
-        <button class="blue" id="wpClear">Clear</button>
-      </div>
-      <div class="examples">
-        <button class="yellow" data-ex="Sam had 10 sweets and ate 3. How many are left?">Try: sweets</button>
-        <button class="yellow" data-ex="There are 3 bags with 4 apples in each. How many apples are there?">Try: bags</button>
-        <button class="yellow" data-ex="Share 12 biscuits equally between 3 friends. How many does each friend get?">Try: sharing</button>
-      </div>
-      <div id="wpOut" class="notice wpout" style="display:none"></div>
-      <details class="more">
-        <summary>What can this helper do?</summary>
-        <p class="small">It runs on this device with no internet and no AI, so it works for simple problems only. It handles one step with two (or more) numbers: adding, taking away, groups (times) and sharing (divide). If it guesses wrong, check the working and try again with clearer words. For harder questions, ask a grown-up or use the calculator.</p>
-      </details>
-    </div>
-  </section>
 </main>
 
 <!-- Game pop-up -->
@@ -1312,7 +1306,7 @@ function calcFmt(v){
   return String(parseFloat(v.toPrecision(12)));
 }
 
-document.querySelectorAll("#tab-calc [data-k]").forEach(b => b.addEventListener("click", () => calcPress(b.dataset.k)));
+document.querySelectorAll("#tab-school [data-k]").forEach(b => b.addEventListener("click", () => calcPress(b.dataset.k)));
 $("calcMode").onclick = () => {
   const sci = $("calcSci");
   const showSci = sci.style.display === "none";
