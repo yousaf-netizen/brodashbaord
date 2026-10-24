@@ -1320,10 +1320,10 @@ calcShow();
 // It only handles one step with simple words.
 const WP_WORDS = { one:1, two:2, three:3, four:4, five:5, six:6, seven:7, eight:8, nine:9, ten:10, eleven:11, twelve:12, twenty:20, hundred:100 };
 const WP_RULES = [
-  { op:"÷", name:"sharing (divide)", re:/\b(share[ds]?|sharing|split|equally|equal parts|divided|among|between)\b/ },
-  { op:"×", name:"groups (times)", re:/\b(times|groups? of|rows? of|lots of|packs? of|bags? of|boxes? of|each|every|per|multiply)\b/ },
-  { op:"−", name:"taking away (minus)", re:/\b(left|ate|eats|gave|give|lost|spent|sold|took|take away|taken|removed|gone|broke|used|fewer|less|minus|difference|remains?|went away|ran away|flew away)\b/ },
-  { op:"+", name:"adding (plus)", re:/\b(altogether|total|in all|in total|more|gets?|got|found|added|plus|bought|joined|sum|together|now has|received|collected|earned|and)\b/ }
+  { op:"÷", name:"sharing (divide)", re:/\b(shares?|shared|sharing|split|splits|splitting|equally|equal parts|equal groups|divided|divides|among|between)\b/ },
+  { op:"×", name:"groups (times)", re:/\b(times|groups? of|rows? of|lots of|packs? of|bags? of|boxes? of|sets? of|pairs? of|each|every|per|multiply|multiplied|double|triple)\b/ },
+  { op:"−", name:"taking away (minus)", re:/\b(left|leftover|remain|remains|remaining|gives?|giving|gave|given|hands?|handed|passes?|passed|lends?|lent|donates?|donated|sells?|sold|eats?|ate|eaten|loses?|lost|losing|spends?|spent|uses?|used|takes?|took|taken|removes?|removed|breaks?|broke|broken|throws?|threw|drops?|dropped|goes away|went away|ran away|flew away|fewer|less|minus|difference)\b/ },
+  { op:"+", name:"adding (plus)", re:/\b(altogether|total|in all|in total|together|combined|sum|more|gets?|got|gains?|gained|finds?|found|buys?|bought|adds?|added|plus|receives?|received|collects?|collected|earns?|earned|joins?|joined|arrives?|arrived)\b/ }
 ];
 
 function wpSolveText(text){
@@ -1335,8 +1335,12 @@ function wpSolveText(text){
     else if (WP_WORDS[w] !== undefined) nums.push(WP_WORDS[w]);
   }
   if (nums.length < 2) return { ok:false, msg:"I need at least two numbers. Try writing them as digits, like 5 or 12." };
-  const rule = WP_RULES.find(r => r.re.test(low));
-  if (!rule) return { ok:false, msg:"I couldn't tell if this is adding, taking away, groups or sharing. Try words like 'total', 'left', 'each' or 'shared'." };
+  // 'gives him 5' means someone receives, so read it as 'got 5'
+  const stepText = low.replace(/\b(gives?|gave|hands?|passes?|lends?)\s+(him|her|me|us|them|you)\s+(?=\d)/g, "got ");
+  const hits = WP_RULES.filter(r => r.re.test(stepText));
+  if (!hits.length) return { ok:false, msg:"I couldn't tell what to do. Try words like 'total', 'gives', 'left', 'each' or 'shared'." };
+  if (hits.some(r => r.op === "+") && hits.some(r => r.op === "−")) return { ok:false, msg:"This seems to have two steps (adding and taking away). I can only do one step at a time." };
+  const rule = hits[0];
 
   const useAll = rule.op === "+" || rule.op === "×";
   const used = useAll ? nums : nums.slice(0, 2);
