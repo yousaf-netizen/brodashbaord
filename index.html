@@ -134,6 +134,47 @@
   #doodle { display:block; width:100%; max-width:100%; height:auto; aspect-ratio:1/1; background:var(--white); border-radius:12px; border:3px solid var(--white); touch-action:none; }
   .toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:var(--green); color:var(--dark); padding:8px 16px; border-radius:12px; font-weight:bold; z-index:300; display:none; max-width:90vw; text-align:center; }
 
+  /* ---------- calendar ---------- */
+  .calhead { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
+  .calhead .mon { font-size:1.2rem; font-weight:bold; text-align:center; }
+  .calhead button { min-height:44px; min-width:52px; }
+  .calgrid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+  .calgrid .dow { text-align:center; font-size:.75rem; font-weight:bold; color:#cfe0ff; }
+  button.calday { background:rgba(255,255,255,.12); color:var(--white); box-shadow:none; min-height:50px; padding:4px 0; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:1rem; }
+  button.calday:hover { transform:none; filter:none; box-shadow:none; background:rgba(255,255,255,.25); }
+  button.calday.today { outline:3px solid var(--yellow); }
+  button.calday.sel { background:var(--white); color:var(--dark); }
+  .dots2 { display:flex; gap:2px; }
+  .dots2 i { width:6px; height:6px; border-radius:50%; background:var(--yellow); display:block; }
+  .evt { display:flex; align-items:center; gap:8px; padding:8px; border-radius:12px; background:rgba(255,255,255,.1); margin-top:6px; }
+  .evt .bar { width:8px; align-self:stretch; border-radius:4px; }
+  .evt .etime { font-weight:bold; min-width:58px; font-size:.9rem; }
+  .evt .etitle { flex:1; font-weight:bold; word-break:break-word; }
+  .evt button { min-height:36px; padding:4px 10px; }
+  textarea { width:100%; min-height:110px; border-radius:12px; border:3px solid var(--green); font-size:1rem; font-family:inherit; padding:10px; resize:vertical; color:var(--dark); margin:6px 0; }
+  .modal label { display:block; margin-top:8px; }
+
+  /* ---------- calculator ---------- */
+  .calc { max-width:340px; margin:8px auto 0; background:#000; border-radius:24px; padding:12px; }
+  .calcdisp { color:var(--white); text-align:right; font-size:2.6rem; font-weight:300; min-height:72px; overflow-x:auto; white-space:nowrap; font-family:system-ui,-apple-system,sans-serif; padding:6px 4px; }
+  .calcgrid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .calcgrid.sci { grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:12px; }
+  .calcgrid button { border-radius:50%; aspect-ratio:1; min-height:0; padding:0; font-size:1.6rem; font-weight:400; font-family:system-ui,-apple-system,sans-serif; box-shadow:none; color:var(--white); background:#333; }
+  .calcgrid button:hover { transform:none; filter:brightness(1.3); box-shadow:none; }
+  .calcgrid button:active { transform:scale(.93); }
+  .calcgrid button.fn { background:#a5a5a5; color:#000; }
+  .calcgrid button.op { background:#ff9f0a; }
+  .calcgrid button.zero { grid-column:span 2; border-radius:40px; aspect-ratio:auto; text-align:left; padding-left:1.5rem; }
+  .calcgrid button.sci-btn { background:#262626; font-size:1rem; border-radius:14px; aspect-ratio:auto; min-height:46px; }
+  .calcgrid button.sci-btn.fn { background:#333; color:var(--white); }
+
+  /* ---------- word problems ---------- */
+  .wpout { line-height:1.5; }
+  .wpout ol { margin:6px 0 0; padding-left:20px; }
+  .wpout .answer { font-size:1.3rem; font-weight:bold; color:#8ff0b3; }
+  .examples { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+  .examples button { font-size:.8rem; padding:6px 10px; min-height:0; }
+
   @keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
   @keyframes pop { from { transform:scale(.7); opacity:0; } to { transform:scale(1); opacity:1; } }
   @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
@@ -171,6 +212,9 @@
   <button data-tab="fun">😂 Fun</button>
   <button data-tab="school">📚 School</button>
   <button data-tab="games">🎮 Games</button>
+  <button data-tab="calendar">📅 Calendar</button>
+  <button data-tab="calc">🧮 Calculator</button>
+  <button data-tab="words">📝 Word Problems</button>
 </nav>
 
 <main>
@@ -284,6 +328,101 @@
       </div>
     </div>
   </section>
+
+  <!-- CALENDAR -->
+  <section class="panel single" id="tab-calendar">
+    <div class="card blue">
+      <h2>📅 My Calendar</h2>
+      <div id="calShareNote" class="notice" style="display:none"></div>
+      <div class="calhead">
+        <button class="blue" id="calPrev" aria-label="Previous month">◀</button>
+        <div class="mon" id="calMonth"></div>
+        <button class="blue" id="calNext" aria-label="Next month">▶</button>
+      </div>
+      <div class="calgrid" id="calGrid"></div>
+      <div class="row">
+        <button class="green" id="calAdd">➕ Add something</button>
+        <button class="yellow" id="calShare">🔗 Share my calendar</button>
+        <button class="blue" id="calCopyShared" style="display:none">📥 Copy into my calendar</button>
+        <button class="blue" id="calToday">Today</button>
+      </div>
+      <h2 style="margin-top:14px" id="calDayTitle"></h2>
+      <div id="calDayList"></div>
+    </div>
+  </section>
+
+  <!-- CALCULATOR -->
+  <section class="panel single" id="tab-calc">
+    <div class="card yellowh">
+      <h2>🧮 Calculator</h2>
+      <div class="row">
+        <button class="blue" id="calcMode">🔬 Switch to Scientific</button>
+      </div>
+      <div class="calc">
+        <div class="calcdisp" id="calcDisp">0</div>
+        <div class="calcgrid sci" id="calcSci" style="display:none">
+          <button class="sci-btn fn" data-k="sin(">sin</button>
+          <button class="sci-btn fn" data-k="cos(">cos</button>
+          <button class="sci-btn fn" data-k="tan(">tan</button>
+          <button class="sci-btn fn" data-k="(">(</button>
+          <button class="sci-btn fn" data-k=")">)</button>
+          <button class="sci-btn fn" data-k="ln(">ln</button>
+          <button class="sci-btn fn" data-k="log(">log</button>
+          <button class="sci-btn fn" data-k="√(">√</button>
+          <button class="sci-btn fn" data-k="^2">x²</button>
+          <button class="sci-btn fn" data-k="^">xʸ</button>
+          <button class="sci-btn fn" data-k="π">π</button>
+          <button class="sci-btn fn" data-k="e">e</button>
+          <button class="sci-btn fn" data-k="⌫">⌫</button>
+        </div>
+        <div class="calcgrid">
+          <button class="fn" data-k="AC">AC</button>
+          <button class="fn" data-k="±">±</button>
+          <button class="fn" data-k="%">%</button>
+          <button class="op" data-k="÷">÷</button>
+          <button data-k="7">7</button>
+          <button data-k="8">8</button>
+          <button data-k="9">9</button>
+          <button class="op" data-k="×">×</button>
+          <button data-k="4">4</button>
+          <button data-k="5">5</button>
+          <button data-k="6">6</button>
+          <button class="op" data-k="−">−</button>
+          <button data-k="1">1</button>
+          <button data-k="2">2</button>
+          <button data-k="3">3</button>
+          <button class="op" data-k="+">+</button>
+          <button class="zero" data-k="0">0</button>
+          <button data-k=".">.</button>
+          <button class="op" data-k="=">=</button>
+        </div>
+      </div>
+      <p class="small">Trig uses degrees. Scientific mode can also use brackets: type 2×(3+4).</p>
+    </div>
+  </section>
+
+  <!-- WORD PROBLEMS -->
+  <section class="panel single" id="tab-words">
+    <div class="card green">
+      <h2>📝 Word Problem Helper</h2>
+      <p class="small">Type a problem that has numbers in it. I'll show you the working.</p>
+      <textarea id="wpText" maxlength="500" placeholder="e.g. Sam had 10 sweets and ate 3. How many are left?"></textarea>
+      <div class="row">
+        <button class="green" id="wpSolve">✏️ Solve it</button>
+        <button class="blue" id="wpClear">Clear</button>
+      </div>
+      <div class="examples">
+        <button class="yellow" data-ex="Sam had 10 sweets and ate 3. How many are left?">Try: sweets</button>
+        <button class="yellow" data-ex="There are 3 bags with 4 apples in each. How many apples are there?">Try: bags</button>
+        <button class="yellow" data-ex="Share 12 biscuits equally between 3 friends. How many does each friend get?">Try: sharing</button>
+      </div>
+      <div id="wpOut" class="notice wpout" style="display:none"></div>
+      <details class="more">
+        <summary>What can this helper do?</summary>
+        <p class="small">It runs on this device with no internet and no AI, so it works for simple problems only. It handles one step with two (or more) numbers: adding, taking away, groups (times) and sharing (divide). If it guesses wrong, check the working and try again with clearer words. For harder questions, ask a grown-up or use the calculator.</p>
+      </details>
+    </div>
+  </section>
 </main>
 
 <!-- Game pop-up -->
@@ -344,6 +483,34 @@
       <button id="saveName">Save name ✔</button>
       <button class="blue" id="resetName">Reset to Fawad</button>
     </div>
+  </div>
+</div>
+
+<!-- Calendar: add pop-up -->
+<div class="modal" id="calModal">
+  <div class="modalcard">
+    <div class="modalhead"><h2>➕ New thing</h2><button class="red" data-close="calModal">✖ Close</button></div>
+    <p class="small" id="calModalDate"></p>
+    <label class="small" for="calTitle">What is it?</label>
+    <input id="calTitle" maxlength="60" placeholder="e.g. Football practice">
+    <label class="small" for="calTime">What time? (leave blank if none)</label>
+    <input id="calTime" type="time">
+    <label class="small">Pick a colour</label>
+    <div class="palette" id="calColors"></div>
+    <div class="row">
+      <button class="green" id="calSave">💾 Save</button>
+      <button class="blue" data-close="calModal">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Calendar: share pop-up -->
+<div class="modal" id="shareModal">
+  <div class="modalcard">
+    <div class="modalhead"><h2>🔗 Share link</h2><button class="red" data-close="shareModal">✖ Close</button></div>
+    <p class="small">Anyone with this link can <b>see</b> your calendar, but they can't change it. If you add things later, make a new link.</p>
+    <input id="shareLink" readonly onclick="this.select()">
+    <div class="row"><button class="green" id="shareCopy">📋 Copy link</button></div>
   </div>
 </div>
 
@@ -861,6 +1028,358 @@ function initQuiz(){
   show();
   return () => {};
 }
+/* ================= CALENDAR ================= */
+const CAL_COLORS = ["#e62429","#1e4fd8","#22c55e","#ffd400","#ff7ab6"];
+let calView = new Date(); calView.setDate(1);
+let calSel = ymd(new Date());
+let calColor = CAL_COLORS[0];
+let calShared = null;   // events from a shared link (read-only)
+
+function hesc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]); }
+function calLoad(){ try { const v = JSON.parse(localStorage.getItem("fawadCal") || "[]"); return Array.isArray(v) ? v : []; } catch(e){ return []; } }
+let calEvents = calLoad();
+function calSave(){ try { localStorage.setItem("fawadCal", JSON.stringify(calEvents)); } catch(e){} }
+function calNewId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function calAll(){ return calShared || calEvents; }
+
+function calReadShare(){
+  const h = location.hash;
+  if (!h.startsWith("#cal=")) return null;
+  try {
+    const data = JSON.parse(decodeURIComponent(h.slice(5)));
+    if (!Array.isArray(data)) return null;
+    return data.slice(0, 500)
+      .filter(e => e && /^\d{4}-\d{2}-\d{2}$/.test(e.d))
+      .map(e => ({
+        date: e.d,
+        time: /^\d{2}:\d{2}$/.test(e.t || "") ? e.t : "",
+        title: String(e.n || "").slice(0, 60),
+        color: /^#[0-9a-f]{6}$/i.test(e.c || "") ? e.c : "#ffffff"
+      }));
+  } catch(e){ return null; }
+}
+
+function calRender(){
+  const all = calAll();
+  const readonly = !!calShared;
+  const y = calView.getFullYear(), m = calView.getMonth();
+  $("calMonth").textContent = calView.toLocaleDateString("en-GB", { month:"long", year:"numeric" });
+  const offset = (new Date(y, m, 1).getDay() + 6) % 7;   // weeks start on Monday
+  const days = new Date(y, m + 1, 0).getDate();
+  const today = ymd(new Date());
+  let html = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d => '<div class="dow">' + d + '</div>').join("");
+  for (let i = 0; i < offset; i++) html += "<div></div>";
+  for (let d = 1; d <= days; d++) {
+    const ds = ymd(new Date(y, m, d));
+    const n = all.filter(e => e.date === ds).length;
+    html += '<button class="calday' + (ds === today ? ' today' : '') + (ds === calSel ? ' sel' : '') + '" data-d="' + ds + '">' + d +
+      (n ? '<span class="dots2">' + '<i></i>'.repeat(Math.min(n, 3)) + '</span>' : '') + '</button>';
+  }
+  $("calGrid").innerHTML = html;
+
+  $("calDayTitle").textContent = parse(calSel).toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long" });
+  const list = all.filter(e => e.date === calSel).sort((a, b) => (a.time || "~").localeCompare(b.time || "~"));
+  $("calDayList").innerHTML = list.length ? list.map(e =>
+    '<div class="evt"><span class="bar" style="background:' + e.color + '"></span>' +
+    '<span class="etime">' + hesc(e.time || "All day") + '</span>' +
+    '<span class="etitle">' + hesc(e.title) + '</span>' +
+    (readonly ? '' : '<button class="red" data-del="' + e.id + '" aria-label="Delete">🗑️</button>') + '</div>').join("")
+    : '<p class="small">Nothing planned here. Enjoy! 😊</p>';
+}
+
+function calPaintSwatches(){ document.querySelectorAll("#calColors .swatch").forEach(b => b.classList.toggle("on", b.dataset.c === calColor)); }
+function calOpenAdd(){
+  $("calTitle").value = "";
+  $("calTime").value = "";
+  calColor = CAL_COLORS[0];
+  $("calModalDate").textContent = "On " + parse(calSel).toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long" });
+  $("calColors").innerHTML = CAL_COLORS.map(c => '<button class="swatch" data-c="' + c + '" style="background:' + c + '" aria-label="Colour"></button>').join("");
+  calPaintSwatches();
+  $("calModal").classList.add("open");
+  setTimeout(() => $("calTitle").focus(), 50);
+}
+$("calColors").onclick = e => { const b = e.target.closest(".swatch"); if (!b) return; calColor = b.dataset.c; calPaintSwatches(); };
+$("calAdd").onclick = calOpenAdd;
+$("calSave").onclick = () => {
+  const title = $("calTitle").value.trim();
+  if (!title) { toast("Type a name first 🙂"); return; }
+  calEvents.push({ id: calNewId(), date: calSel, time: $("calTime").value, title: title.slice(0, 60), color: calColor });
+  calSave();
+  $("calModal").classList.remove("open");
+  calRender();
+  toast("Saved! ✅");
+};
+$("calGrid").onclick = e => { const b = e.target.closest("[data-d]"); if (!b) return; calSel = b.dataset.d; calRender(); };
+$("calDayList").onclick = e => {
+  const b = e.target.closest("[data-del]"); if (!b) return;
+  if (!confirm("Delete this one?")) return;
+  calEvents = calEvents.filter(ev => ev.id !== b.dataset.del);
+  calSave(); calRender(); toast("Removed 🗑️");
+};
+$("calPrev").onclick = () => { calView.setMonth(calView.getMonth() - 1); calRender(); };
+$("calNext").onclick = () => { calView.setMonth(calView.getMonth() + 1); calRender(); };
+$("calToday").onclick = () => { calView = new Date(); calView.setDate(1); calSel = ymd(new Date()); calRender(); };
+
+function calShareLink(){
+  const data = calEvents.map(e => ({ d: e.date, t: e.time, n: e.title, c: e.color }));
+  return location.href.split("#")[0] + "#cal=" + encodeURIComponent(JSON.stringify(data));
+}
+$("calShare").onclick = () => {
+  const link = calShareLink();
+  $("shareLink").value = link;
+  $("shareModal").classList.add("open");
+  if (link.length > 4000) toast("That's a long link. Fewer events make a shorter one.");
+};
+$("shareCopy").onclick = () => {
+  const box = $("shareLink");
+  const done = () => toast("Link copied! 📋");
+  box.select();
+  if (navigator.clipboard) navigator.clipboard.writeText(box.value).then(done).catch(() => { document.execCommand("copy"); done(); });
+  else { document.execCommand("copy"); done(); }
+};
+
+function calLeaveShared(){
+  calShared = null;
+  history.replaceState(null, "", location.pathname + location.search);
+  $("calShareNote").style.display = "none";
+  $("calAdd").style.display = "";
+  $("calShare").style.display = "";
+  $("calCopyShared").style.display = "none";
+  calRender();
+}
+$("calCopyShared").onclick = () => {
+  calEvents = calEvents.concat(calShared.map(e => Object.assign({}, e, { id: calNewId() })));
+  calSave();
+  calLeaveShared();
+  toast("Copied into your calendar ✅");
+};
+
+document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => $(b.dataset.close).classList.remove("open")));
+
+(function calInit(){
+  const shared = calReadShare();
+  if (shared) {
+    calShared = shared;
+    const note = $("calShareNote");
+    note.innerHTML = "👀 This is a shared schedule. You can look, but not change it. <button class=\"blue\" id=\"calBack\">↩ Back to mine</button>";
+    note.style.display = "block";
+    $("calBack").onclick = calLeaveShared;
+    $("calAdd").style.display = "none";
+    $("calShare").style.display = "none";
+    $("calCopyShared").style.display = "";
+    const dates = shared.map(e => e.date).sort();
+    if (dates.length) { calSel = dates[0]; calView = parse(dates[0]); calView.setDate(1); }
+    document.querySelector('nav.tabs button[data-tab="calendar"]').click();
+  }
+  calRender();
+})();
+
+/* ================= CALCULATOR ================= */
+const calcState = { expr: "", fresh: false };
+const CALC_OPS = ["+","−","×","÷","^"];
+function calcShow(){ $("calcDisp").textContent = calcState.expr || "0"; }
+
+function calcPress(k){
+  const s = calcState;
+  if (k === "AC") { s.expr = ""; s.fresh = false; return calcShow(); }
+  if (k === "=") return calcEquals();
+  if (s.expr === "Error") s.expr = "";
+  if (k === "⌫") {
+    if (s.fresh) { s.expr = ""; s.fresh = false; }
+    else s.expr = s.expr.replace(/(sin|cos|tan|ln|log|√)\($|\^2$|.$/, "");
+    return calcShow();
+  }
+  if (k === "±") {
+    s.fresh = false;
+    const m = s.expr.match(/(\d+\.?\d*|\.\d+)$/);
+    if (!m) return calcShow();
+    const before = s.expr.slice(0, m.index);
+    if (before.endsWith("−") && (before.length === 1 || /[+−×÷^(]/.test(before.slice(-2, -1)))) s.expr = before.slice(0, -1) + m[0];
+    else s.expr = before + "−" + m[0];
+    return calcShow();
+  }
+  if (k === "%") { if (/[\d)πe]$/.test(s.expr)) { s.expr += "%"; s.fresh = false; } return calcShow(); }
+  if (CALC_OPS.includes(k)) {
+    if (!s.expr) s.expr = k === "−" ? "−" : "0" + k;
+    else if (/[+−×÷^]$/.test(s.expr)) {
+      if (k === "−" && !/−$/.test(s.expr)) s.expr += k;      // allow a negative after an operator
+      else s.expr = s.expr.slice(0, -1) + k;                  // swap the operator
+    }
+    else if (/\($/.test(s.expr)) { if (k === "−") s.expr += k; }
+    else s.expr += k;
+    s.fresh = false;
+    return calcShow();
+  }
+  // numbers, dot, brackets, functions, π, e
+  if (s.fresh) { s.expr = ""; s.fresh = false; }
+  if (k === ".") {
+    const cur = s.expr.match(/[\d.]*$/)[0];
+    if (cur.includes(".")) return calcShow();
+    s.expr += /\d$/.test(s.expr) ? "." : "0.";
+    return calcShow();
+  }
+  if (s.expr === "0") s.expr = "";
+  s.expr += k;
+  calcShow();
+}
+
+function calcEquals(){
+  const s = calcState;
+  if (!s.expr || s.expr === "Error") return;
+  try { s.expr = calcFmt(calcEval(s.expr)); }
+  catch(e) { s.expr = "Error"; }
+  s.fresh = true;
+  calcShow();
+}
+
+function calcEval(src){
+  let s = src.replace(/−/g, "-").replace(/×/g, "*").replace(/÷/g, "/").replace(/√/g, "sqrt").replace(/π/g, "pi");
+  s = s.replace(/[-+*\/^]+$/, "");                 // ignore a dangling operator
+  const open = (s.match(/\(/g) || []).length, close = (s.match(/\)/g) || []).length;
+  s += ")".repeat(Math.max(0, open - close));      // close any open brackets
+  const t = [];
+  const re = /(\d+\.?\d*|\.\d+|sqrt|sin|cos|tan|ln|log|pi|e|[-+*\/^()%])/y;
+  let pos = 0;
+  while (pos < s.length) {
+    re.lastIndex = pos;
+    const m = re.exec(s);
+    if (!m) throw new Error("bad input");
+    t.push(m[1]); pos = re.lastIndex;
+  }
+  let i = 0;
+  const peek = () => t[i];
+  const FN = {
+    sqrt: Math.sqrt,
+    sin: x => Math.sin(x * Math.PI / 180),
+    cos: x => Math.cos(x * Math.PI / 180),
+    tan: x => Math.tan(x * Math.PI / 180),
+    ln: Math.log,
+    log: Math.log10
+  };
+  const startsValue = tok => tok !== undefined && (/^[\d.]/.test(tok) || tok === "(" || tok === "pi" || tok === "e" || (tok in FN));
+  function expr(){
+    let v = term();
+    while (peek() === "+" || peek() === "-") { const op = t[i++]; const r = term(); v = op === "+" ? v + r : v - r; }
+    return v;
+  }
+  function term(){
+    let v = unary();
+    for (;;) {
+      const p = peek();
+      if (p === "*" || p === "/") { i++; const r = unary(); v = p === "*" ? v * r : v / r; }
+      else if (startsValue(p)) { v = v * unary(); }   // implicit multiply, e.g. 2π or 3(4+1)
+      else return v;
+    }
+  }
+  function unary(){
+    if (peek() === "-") { i++; return -unary(); }
+    if (peek() === "+") { i++; return unary(); }
+    return power();
+  }
+  function power(){
+    const b = postfix();
+    if (peek() === "^") { i++; return Math.pow(b, unary()); }
+    return b;
+  }
+  function postfix(){
+    let v = primary();
+    while (peek() === "%") { i++; v /= 100; }
+    return v;
+  }
+  function primary(){
+    const tok = t[i++];
+    if (tok === undefined) throw new Error("unexpected end");
+    if (tok === "(") { const v = expr(); if (t[i++] !== ")") throw new Error("bracket"); return v; }
+    if (/^[\d.]/.test(tok)) return parseFloat(tok);
+    if (tok === "pi") return Math.PI;
+    if (tok === "e") return Math.E;
+    if (tok in FN) {
+      if (peek() === "(") { i++; const v = expr(); if (t[i++] !== ")") throw new Error("bracket"); return FN[tok](v); }
+      return FN[tok](unary());
+    }
+    throw new Error("unexpected " + tok);
+  }
+  const v = expr();
+  if (i !== t.length) throw new Error("extra");
+  if (!isFinite(v)) throw new Error("not finite");
+  return v;
+}
+
+function calcFmt(v){
+  if (Object.is(v, -0)) v = 0;
+  const a = Math.abs(v);
+  if (a !== 0 && (a >= 1e12 || a < 1e-9)) return v.toExponential(6).replace(/\.?0+e/, "e").replace("e+", "e");
+  return String(parseFloat(v.toPrecision(12)));
+}
+
+document.querySelectorAll("#tab-calc [data-k]").forEach(b => b.addEventListener("click", () => calcPress(b.dataset.k)));
+$("calcMode").onclick = () => {
+  const sci = $("calcSci");
+  const showSci = sci.style.display === "none";
+  sci.style.display = showSci ? "grid" : "none";
+  $("calcMode").textContent = showSci ? "🧮 Switch to Basic" : "🔬 Switch to Scientific";
+};
+calcShow();
+
+/* ================= WORD PROBLEMS ================= */
+// Runs entirely in the browser: no AI, no internet, no API key.
+// It only handles one step with simple words.
+const WP_WORDS = { one:1, two:2, three:3, four:4, five:5, six:6, seven:7, eight:8, nine:9, ten:10, eleven:11, twelve:12, twenty:20, hundred:100 };
+const WP_RULES = [
+  { op:"÷", name:"sharing (divide)", re:/\b(share[ds]?|sharing|split|equally|equal parts|divided|among|between)\b/ },
+  { op:"×", name:"groups (times)", re:/\b(times|groups? of|rows? of|lots of|packs? of|bags? of|boxes? of|each|every|per|multiply)\b/ },
+  { op:"−", name:"taking away (minus)", re:/\b(left|ate|eats|gave|give|lost|spent|sold|took|take away|taken|removed|gone|broke|used|fewer|less|minus|difference|remains?|went away|ran away|flew away)\b/ },
+  { op:"+", name:"adding (plus)", re:/\b(altogether|total|in all|in total|more|gets?|got|found|added|plus|bought|joined|sum|together|now has|received|collected|earned|and)\b/ }
+];
+
+function wpSolveText(text){
+  const low = text.toLowerCase();
+  const nums = [];
+  for (const m of low.matchAll(/\d+(?:\.\d+)?|[a-z]+/g)) {
+    const w = m[0];
+    if (/^\d/.test(w)) nums.push(parseFloat(w));
+    else if (WP_WORDS[w] !== undefined) nums.push(WP_WORDS[w]);
+  }
+  if (nums.length < 2) return { ok:false, msg:"I need at least two numbers. Try writing them as digits, like 5 or 12." };
+  const rule = WP_RULES.find(r => r.re.test(low));
+  if (!rule) return { ok:false, msg:"I couldn't tell if this is adding, taking away, groups or sharing. Try words like 'total', 'left', 'each' or 'shared'." };
+
+  const useAll = rule.op === "+" || rule.op === "×";
+  const used = useAll ? nums : nums.slice(0, 2);
+  let answer, working;
+  if (rule.op === "+") { answer = used.reduce((a, b) => a + b, 0); working = used.join(" + ") + " = " + calcFmt(answer); }
+  else if (rule.op === "×") { answer = used.reduce((a, b) => a * b, 1); working = used.join(" × ") + " = " + calcFmt(answer); }
+  else if (rule.op === "−") { answer = used[0] - used[1]; working = used[0] + " − " + used[1] + " = " + calcFmt(answer); }
+  else {
+    if (used[1] === 0) return { ok:false, msg:"You can't share things into 0 groups. Check the numbers!" };
+    answer = used[0] / used[1];
+    working = used[0] + " ÷ " + used[1] + " = " + calcFmt(answer);
+  }
+  return { ok:true, nums, used, rule, working, answer: calcFmt(answer), ignored: !useAll && nums.length > 2 };
+}
+
+function wpRender(text){
+  const out = $("wpOut");
+  out.style.display = "block";
+  const r = wpSolveText(text);
+  if (!r.ok) { out.innerHTML = "🤔 " + hesc(r.msg); return; }
+  out.innerHTML =
+    "<ol>" +
+      "<li>Numbers I found: <b>" + r.nums.map(n => calcFmt(n)).join(", ") + "</b>" + (r.ignored ? " (I only used the first two)" : "") + "</li>" +
+      "<li>What to do: <b>" + hesc(r.rule.name) + "</b></li>" +
+      "<li>Working: <b>" + hesc(r.working) + "</b></li>" +
+    "</ol>" +
+    '<p class="answer">Answer: ' + hesc(r.answer) + '</p>' +
+    '<p class="small">Does it make sense? Ask a grown-up if you are not sure.</p>';
+}
+
+$("wpSolve").onclick = () => {
+  const t = $("wpText").value.trim();
+  if (!t) { toast("Type a problem first 🙂"); return; }
+  wpRender(t);
+};
+$("wpClear").onclick = () => { $("wpText").value = ""; $("wpOut").style.display = "none"; };
+document.querySelectorAll("[data-ex]").forEach(b => b.addEventListener("click", () => { $("wpText").value = b.dataset.ex; wpRender(b.dataset.ex); }));
 </script>
 </body>
 </html>
